@@ -2,12 +2,9 @@ extends layout
 
 block content
   h1 Лаборатория
-  ul
-    li
-      a(class='button', href='/registry') Прием проб
-    li
-      a(class='button', href='/chemistry-lab') Химическая лаборатория
-    li
-      a(class='button', href='/bacteriology-lab') Бактериологическая лаборатория
-    li
-      a(class='button', href='/staff') Специалисты
+
+  nav(class='nav')
+      a(class='nav-link', href='/registry') Прием проб
+      a(class='nav-link', href='/chemistry') Химическая лаборатория
+      a(class='nav-link', href='/bacteriology') Бактериологическая лаборатория
+      a(class='nav-link', href='/staff') Специалисты
