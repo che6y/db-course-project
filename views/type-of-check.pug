@@ -1,0 +1,11 @@
+extends layout
+
+block content
+    div(class="container")
+        ul(class="list-group")
+            each item in data
+                li(class="list-group-item")= item.name
+                    a(
+                        href="/type-of-check/" + item.id,
+                        class="btn btn-success"
+                        ) Изменить

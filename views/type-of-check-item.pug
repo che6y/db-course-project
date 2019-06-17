@@ -1,0 +1,26 @@
+extends layout
+
+block content
+    div(class="container")
+        form(
+            method="POST",
+            action="/type-of-check"
+        )
+            input(
+                name="id",
+                type="number",
+                value=data.id
+            )
+            div(class="form-group")
+                label(for="name") Название проверки
+                input(
+                    id="name",
+                    name="name",
+                    type="text",
+                    value=data.name
+                    )
+            button(
+                type="submit",
+                class="btn btn-primary"
+                ) Сохранить изменения
+            a(href="/type-of-check", class="btn btn-secondary") Отменить
