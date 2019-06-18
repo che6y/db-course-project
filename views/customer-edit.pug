@@ -1,0 +1,49 @@
+extends layout
+
+block content
+    div(class="container")
+        form(
+            method="POST",
+            action="/customers?_method=PUT"
+        )
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken
+            )
+            input(
+                name="id",
+                type="hidden",
+                value=data.id
+            )
+            div(class="form-group row")
+                label(
+                    for="name",
+                    class="col-sm-2 col-form-label"
+                    ) Название
+                div(class="col-sm-8")
+                    input(
+                        id="name",
+                        class="form-control",
+                        name="name",
+                        type="text",
+                        value=data.name
+                    )
+            div(class="form-group row")
+                label(
+                    for="address",
+                    class="col-sm-2 col-form-label"
+                ) Адрес
+                div(class="col-sm-8")
+                    input(
+                        id="address",
+                        class="form-control"
+                        name="address",
+                        type="text",
+                        value=data.address
+                    )
+            button(
+                type="submit",
+                class="btn btn-primary"
+            ) Сохранить изменения
+            a(href="/customers", class="btn btn-secondary") Отменить

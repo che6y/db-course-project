@@ -3,6 +3,8 @@ extends layout
 block content
     div(class="container")
         h3= title
+
+        a(href="/customers") Список заказчиков
         ul
             each item in data
                 li= item.name

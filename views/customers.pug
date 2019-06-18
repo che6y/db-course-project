@@ -5,39 +5,47 @@ block content
 
         form(
             method="POST",
-            action="/type-of-check"
+            action="/customers"
         )
             div(class="form-group row")
                 label(
                     for="new-item-name",
                     class="col-form-label col-sm-3"
                 ) Добавить новую запись
-                div(class="col-sm-6")
+                div(class="col-sm-3")
                     input(
                         id="new-item-name",
                         type="text",
                         class="form-control",
                         name="name",
                         value="",
-                        placeholder="Название проверки"
+                        placeholder="Название"
                     )
                 div(class="col-sm-3")
-                    button(
-                        class="btn btn-primary",
-                        type="submit"
-                    ) Добавить
+                    input(
+                        type="text",
+                        class="form-control",
+                        name="address",
+                        value="",
+                        placeholder="Адрес"
+                    )
+                div(class="col-sm-3")
+                        button(
+                            class="btn btn-primary",
+                            type="submit"
+                        ) Добавить
 
         ul(class="list-group")
             each item in data
                 li(class="list-group-item d-flex align-items-center")
                     span(class="flex-grow-1")= item.name
                     a(
-                        href="/type-of-check/" + item.id,
+                        href="/customers/" + item.id,
                         class="btn btn-success"
-                        ) Изменить
+                    ) Изменить
                     form(
                         method="POST",
-                        action="/type-of-check?_method=DELETE"
+                        action="/customers?_method=DELETE"
                     )
                         input(
                             type="hidden",

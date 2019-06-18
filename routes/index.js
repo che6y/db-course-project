@@ -1,6 +1,15 @@
-var express = require('express');
-var router = express.Router();
-var connection = require('../database.js');
+var express        = require('express');
+var router         = express.Router();
+var connection     = require('../database.js');
+var cookieParser   = require('cookie-parser');
+var csrf           = require('csurf');
+var methodOverride = require('method-override');
+
+var csrfProtection = csrf({ cookie: true });
+
+router.use(cookieParser());
+router.use(express.urlencoded({ extended: false }));
+router.use(methodOverride('_method'));
 
 router.get('/', function(req, res, next) {
     res.render('index', { title: 'Лаборатория' });
@@ -31,30 +40,78 @@ router.get('/type-of-check', function(req, res, next) {
         res.render( 'type-of-check', { title: 'Вид проверки', data: results } );
     });
     
+}).post('/type-of-check', function(req, res, next) {
+    connection.query(
+        'INSERT INTO `types_of_check`(`name`) VALUES (?)',
+        [req.body.name],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    res.redirect('/type-of-check');
+}).put('/type-of-check', function(req, res, next) {
+    connection.query(
+        'UPDATE `types_of_check` SET `name`=? WHERE `id`=?',
+        [req.body.name, req.body.id],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/type-of-check');
+    
+}).delete('/type-of-check', function(req, res, next) {
+    connection.query(
+        'DELETE FROM `types_of_check` WHERE `id`=?',
+        [req.body.id],
+        function (error, results, fields) { if (error) throw error;}
+    );
+    
+    res.redirect('back');
 });
-
-router.get('/type-of-check/:id', function(req, res, next) {
+router.get('/type-of-check/:id', csrfProtection, function(req, res, next) {
     
     connection.query('SELECT * FROM `types_of_check` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'type-of-check-item', { title: results[0].name + ' - Изменить', data: results[0] } );
+        res.render( 'type-of-check-item', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
     });
     
 });
 
-router.post('/type-of-check', function(req, res, next) {
+// Customers
+router.get('/customers', function(req, res, next) {
+    
+    connection.query('SELECT * FROM `customers` LIMIT 10', function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'customers', { title: 'Заказчики', data: results } );
+    });
+    
+}).post('/customers', function(req, res, next) {
     connection.query(
-        'UPDATE `types_of_check` SET `name`=? WHERE `id`=?',
-        [req.body.name, req.body.id],
-        function (error, results, fields) {
-            if (error) throw error;
-            console.log(results);
-        }
+        'INSERT INTO `customers`(`name`,`address`) VALUES (?,?)',
+        [req.body.name, req.body.address],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    res.redirect('/customers');
+}).put('/customers', function(req, res, next) {
+    connection.query(
+        'UPDATE `customers` SET `name`=?, `address`=? WHERE `id`=?',
+        [req.body.name, req.body.address, req.body.id],
+        function (error, results, fields) { if (error) throw error; }
     );
     
-    connection.query('SELECT * FROM `types_of_check` LIMIT 10', function (error, results, fields) {
+    res.redirect('/customers');
+    
+}).delete('/customers', function(req, res, next) {
+    connection.query(
+        'DELETE FROM `customers` WHERE `id`=?',
+        [req.body.id],
+        function (error, results, fields) { if (error) throw error;}
+    );
+    
+    res.redirect('back');
+});
+router.get('/customers/:id', csrfProtection, function(req, res, next) {
+    
+    connection.query('SELECT * FROM `customers` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'type-of-check', { title: 'Вид проверки', data: results } );
+        res.render( 'customer-edit', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
     });
     
 });

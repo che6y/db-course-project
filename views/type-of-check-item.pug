@@ -4,11 +4,16 @@ block content
     div(class="container")
         form(
             method="POST",
-            action="/type-of-check"
+            action="/type-of-check?_method=PUT"
         )
             input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken
+            )
+            input(
                 name="id",
-                type="number",
+                type="hidden",
                 value=data.id
             )
             div(class="form-group")
