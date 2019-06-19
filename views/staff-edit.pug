@@ -1,0 +1,47 @@
+extends layout
+
+block content
+    div(class="container")
+        form(
+        method="POST",
+        action="/staff?_method=PUT"
+        )
+            input(
+            type="hidden",
+            name="_csrf",
+            value=csrfToken
+            )
+            input(
+            name="id",
+            type="hidden",
+            value=data.id
+            )
+            div(class="form-group")
+                label(for="surname") Фамилия
+                input(
+                id="surname",
+                name="surname",
+                type="text",
+                value=data.surname
+                )
+            div(class="form-group")
+                label(for="") Имя
+                input(
+                id="name",
+                name="name",
+                type="text",
+                value=data.name
+                )
+            div(class="form-group")
+                label(for="fathers-name") Имя
+                input(
+                id="fathers-name",
+                name="fathersName",
+                type="text",
+                value=data.fathers_name
+                )
+            button(
+            type="submit",
+            class="btn btn-primary"
+            ) Сохранить изменения
+            a(href="/staff", class="btn btn-secondary") Отменить

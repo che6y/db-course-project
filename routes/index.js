@@ -28,10 +28,10 @@ router.get('/bacteriology', function(req, res, next) {
 router.get('/chemistry', function(req, res, next) {
     res.render( 'chemistry', { title: 'Химическая лаборатория' } );
 });
-
-router.get('/staff', function(req, res, next) {
-    res.render( 'staff', { title: 'Специалисты' } );
-});
+//
+// router.get('/staff', function(req, res, next) {
+//     res.render( 'staff', { title: 'Специалисты' } );
+// });
 
 router.get('/type-of-check', function(req, res, next) {
     
@@ -115,5 +115,49 @@ router.get('/customers/:id', csrfProtection, function(req, res, next) {
     });
     
 });
+
+// Staff
+router.get('/staff', function(req, res, next) {
+    connection.query('SELECT * FROM `staff` LIMIT 10', function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'staff', { title: 'Специалисты', data: results } );
+    });
+
+}).post('/staff', function(req, res, next) {
+    connection.query(
+        'INSERT INTO `staff`(`name`, `surname`, `fathers_name`) VALUES (?,?,?)',
+        [req.body.name, req.body.surname, req.body.fathersName],
+        function (error, results, fields) { if (error) throw error; }
+    );
+
+    res.redirect('/staff');
+
+}).put('/staff', function(req, res, next) {
+    connection.query(
+        'UPDATE `staff` SET `name`=?, `surname`=?, `fathers_name`=? WHERE `id`=?',
+        [req.body.name, req.body.surname, req.body.fathersName, req.body.id],
+        function (error, results, fields) { if (error) throw error; }
+    );
+
+    res.redirect('/staff');
+
+}).delete('/staff', function(req, res, next) {
+    connection.query(
+        'DELETE FROM `staff` WHERE `id`=?',
+        [req.body.id],
+        function (error, results, fields) { if (error) throw error;}
+    );
+
+    res.redirect('back');
+});
+router.get('/staff/:id', csrfProtection, function(req, res, next) {
+
+    connection.query('SELECT * FROM `staff` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'staff-edit', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
+    });
+
+});
+
 
 module.exports = router;
