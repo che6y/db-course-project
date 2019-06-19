@@ -1,15 +1,15 @@
-var express        = require('express');
-var router         = express.Router();
-var connection     = require('../database.js');
-var cookieParser   = require('cookie-parser');
-var csrf           = require('csurf');
-var methodOverride = require('method-override');
-
-var csrfProtection = csrf({ cookie: true });
+const express        = require('express');
+const router         = express.Router();
+const connection     = require('../database.js');
+const cookieParser   = require('cookie-parser');
+const csrf           = require('csurf');
+const methodOverride = require('method-override');
+const { check, validationResult } = require('express-validator/check');
 
 router.use(cookieParser());
 router.use(express.urlencoded({ extended: false }));
 router.use(methodOverride('_method'));
+router.use(csrf({ cookie: true }));
 
 router.get('/', function(req, res, next) {
     res.render('index', { title: 'Лаборатория' });
@@ -28,16 +28,14 @@ router.get('/bacteriology', function(req, res, next) {
 router.get('/chemistry', function(req, res, next) {
     res.render( 'chemistry', { title: 'Химическая лаборатория' } );
 });
-//
-// router.get('/staff', function(req, res, next) {
-//     res.render( 'staff', { title: 'Специалисты' } );
-// });
 
+
+// Type of check
 router.get('/type-of-check', function(req, res, next) {
     
     connection.query('SELECT * FROM `types_of_check` LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'type-of-check', { title: 'Вид проверки', data: results } );
+        res.render( 'type-of-check', { title: 'Вид проверки', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/type-of-check', function(req, res, next) {
@@ -65,7 +63,7 @@ router.get('/type-of-check', function(req, res, next) {
     
     res.redirect('back');
 });
-router.get('/type-of-check/:id', csrfProtection, function(req, res, next) {
+router.get('/type-of-check/:id', function(req, res, next) {
     
     connection.query('SELECT * FROM `types_of_check` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
@@ -79,7 +77,7 @@ router.get('/customers', function(req, res, next) {
     
     connection.query('SELECT * FROM `customers` LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'customers', { title: 'Заказчики', data: results } );
+        res.render( 'customers', { title: 'Заказчики', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/customers', function(req, res, next) {
@@ -107,7 +105,7 @@ router.get('/customers', function(req, res, next) {
     
     res.redirect('back');
 });
-router.get('/customers/:id', csrfProtection, function(req, res, next) {
+router.get('/customers/:id', function(req, res, next) {
     
     connection.query('SELECT * FROM `customers` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
@@ -120,13 +118,13 @@ router.get('/customers/:id', csrfProtection, function(req, res, next) {
 router.get('/staff', function(req, res, next) {
     connection.query('SELECT * FROM `staff` LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'staff', { title: 'Специалисты', data: results } );
+        res.render( 'staff', { title: 'Специалисты', data: results, csrfToken: req.csrfToken() } );
     });
 
 }).post('/staff', function(req, res, next) {
     connection.query(
         'INSERT INTO `staff`(`name`, `surname`, `fathers_name`) VALUES (?,?,?)',
-        [req.body.name, req.body.surname, req.body.fathersName],
+        [req.body.name.trim(), req.body.surname.trim(), req.body.fathersName.trim()],
         function (error, results, fields) { if (error) throw error; }
     );
 
@@ -135,7 +133,7 @@ router.get('/staff', function(req, res, next) {
 }).put('/staff', function(req, res, next) {
     connection.query(
         'UPDATE `staff` SET `name`=?, `surname`=?, `fathers_name`=? WHERE `id`=?',
-        [req.body.name, req.body.surname, req.body.fathersName, req.body.id],
+        [req.body.name.trim(), req.body.surname.trim(), req.body.fathersName.trim(), req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
 
@@ -150,11 +148,11 @@ router.get('/staff', function(req, res, next) {
 
     res.redirect('back');
 });
-router.get('/staff/:id', csrfProtection, function(req, res, next) {
+router.get('/staff/:id', function(req, res, next) {
 
     connection.query('SELECT * FROM `staff` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'staff-edit', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
+        res.render( 'staff-edit', { title: 'Сотрудник', data: results[0], csrfToken: req.csrfToken() } );
     });
 
 });

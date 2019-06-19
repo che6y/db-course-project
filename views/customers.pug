@@ -5,8 +5,11 @@ block content
 
         form(
             method="POST",
-            action="/customers"
-        )
+            action="/customers")
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken)
             div(class="form-group row")
                 label(
                     for="new-item-name",
@@ -19,16 +22,14 @@ block content
                         class="form-control",
                         name="name",
                         value="",
-                        placeholder="Название"
-                    )
+                        placeholder="Название")
                 div(class="col-sm-3")
                     input(
                         type="text",
                         class="form-control",
                         name="address",
                         value="",
-                        placeholder="Адрес"
-                    )
+                        placeholder="Адрес")
                 div(class="col-sm-3")
                         button(
                             class="btn btn-primary",
@@ -45,13 +46,15 @@ block content
                     ) Изменить
                     form(
                         method="POST",
-                        action="/customers?_method=DELETE"
-                    )
+                        action="/customers?_method=DELETE")
+                        input(
+                            type="hidden",
+                            name="_csrf",
+                            value=csrfToken)
                         input(
                             type="hidden",
                             name="id",
-                            value=item.id
-                        )
+                            value=item.id)
                         button(
                             class="btn btn-danger",
                             type="submit"

@@ -6,8 +6,11 @@ block content
 
         form(
         method="POST",
-        action="/staff"
-        )
+        action="/staff")
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken)
             div(class="form-group row")
 
                 div(class="col-sm-4")
@@ -17,8 +20,7 @@ block content
                     class="form-control",
                     name="surname",
                     value="",
-                    placeholder="Фамилия"
-                    )
+                    placeholder="Фамилия")
                 div(class="col-sm-3")
                     input(
                     id="new-item-name",
@@ -26,8 +28,7 @@ block content
                     class="form-control",
                     name="name",
                     value="",
-                    placeholder="Имя"
-                    )
+                    placeholder="Имя")
                 div(class="col-sm-3")
                     input(
                     id="new-item-fathers-name",
@@ -35,8 +36,7 @@ block content
                     class="form-control",
                     name="fathersName",
                     value="",
-                    placeholder="Отчество"
-                    )
+                    placeholder="Отчество")
                 div(class="col-sm-2")
                     button(
                     class="btn btn-primary",
@@ -53,13 +53,15 @@ block content
                     ) Изменить
                     form(
                     method="POST",
-                    action="/staff?_method=DELETE"
-                    )
+                    action="/staff?_method=DELETE")
+                        input(
+                            type="hidden",
+                            name="_csrf",
+                            value=csrfToken)
                         input(
                         type="hidden",
                         name="id",
-                        value=item.id
-                        )
+                        value=item.id)
                         button(
                         class="btn btn-danger",
                         type="submit"
