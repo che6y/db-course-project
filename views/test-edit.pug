@@ -1,0 +1,32 @@
+extends layout
+
+block content
+    div(class="container")
+        form(
+            method="POST",
+            action="/tests?_method=PUT")
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken)
+            div(class="form-group row")
+                div(class="col-sm-5")
+                    input(
+                        type="text",
+                        class="form-control",
+                        name="name",
+                        value="",
+                        placeholder="Название")
+                select(
+                    class="col-sm-4",
+                    name="labId")
+                    each val, index in labArr
+                        option(
+                            value=index,
+                            class="form-control"
+                        )= val
+                div(class="col-sm-3")
+                    button(
+                        class="btn btn-primary",
+                        type="submit"
+                    ) Добавить

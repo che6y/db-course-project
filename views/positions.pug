@@ -8,36 +8,24 @@ block content
         method="POST",
         action="/positions")
             input(
-                type="hidden",
-                name="_csrf",
-                value=csrfToken)
+            type="hidden",
+            name="_csrf",
+            value=csrfToken)
             div(class="form-group row")
-
-                div(class="col-sm-4")
+                div(class="col-sm-5")
                     input(
-                    id="new-item-surname",
-                    type="text",
-                    class="form-control",
-                    name="surname",
-                    value="",
-                    placeholder="Фамилия")
-                div(class="col-sm-3")
-                    input(
-                    id="new-item-name",
                     type="text",
                     class="form-control",
                     name="name",
                     value="",
-                    placeholder="Имя")
+                    placeholder="Название")
+                //select(class="col-sm-4")
+                //    each val, index in lab_arr
+                //        option(
+                //        value=index,
+                //        class="form-control"
+                        )= val
                 div(class="col-sm-3")
-                    input(
-                    id="new-item-fathers-name",
-                    type="text",
-                    class="form-control",
-                    name="fathersName",
-                    value="",
-                    placeholder="Отчество")
-                div(class="col-sm-2")
                     button(
                     class="btn btn-primary",
                     type="submit"
@@ -46,18 +34,18 @@ block content
         ul(class="list-group")
             each item in data
                 li(class="list-group-item d-flex align-items-center")
-                    span(class="flex-grow-1")= item.surname + " " + item.name + " " + item.fathers_name
+                    span(class="flex-grow-1")= item.name
                     a(
-                    href="/staff/" + item.id,
+                    href="/positions/" + item.id,
                     class="btn btn-success"
                     ) Изменить
                     form(
                     method="POST",
-                    action="/staff?_method=DELETE")
+                    action="/positions?_method=DELETE")
                         input(
-                            type="hidden",
-                            name="_csrf",
-                            value=csrfToken)
+                        type="hidden",
+                        name="_csrf",
+                        value=csrfToken)
                         input(
                         type="hidden",
                         name="id",

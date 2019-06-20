@@ -157,5 +157,132 @@ router.get('/staff/:id', function(req, res, next) {
 
 });
 
+// Laboratories
+router.get('/laboratories', function(req, res, next) {
+    connection.query('SELECT * FROM `laboratories` LIMIT 10', function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'laboratories', { title: 'Отделы', data: results, csrfToken: req.csrfToken() } );
+    });
+    
+}).post('/laboratories', function(req, res, next) {
+    connection.query(
+        'INSERT INTO `laboratories`(`name`) VALUES (?)',
+        [req.body.name.trim()],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/laboratories');
+    
+}).put('/laboratories', function(req, res, next) {
+    connection.query(
+        'UPDATE `laboratories` SET `name`=? WHERE `id`=?',
+        [req.body.name.trim(), req.body.id],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/laboratories');
+    
+}).delete('/laboratories', function(req, res, next) {
+    connection.query(
+        'DELETE FROM `laboratories` WHERE `id`=?',
+        [req.body.id],
+        function (error, results, fields) { if (error) throw error;}
+    );
+    
+    res.redirect('back');
+});
+router.get('/laboratory/:id', function(req, res, next) {
+    
+    connection.query('SELECT * FROM `laboratories` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'laboratory-edit', { title: 'Отделы', data: results[0], csrfToken: req.csrfToken() } );
+    });
+    
+});
+
+// Laboratories
+router.get('/positions', function(req, res, next) {
+    connection.query('SELECT * FROM `positions` LIMIT 10', function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'positions', { title: 'Список должностей', data: results, csrfToken: req.csrfToken() } );
+    });
+    
+}).post('/positions', function(req, res, next) {
+    connection.query(
+        'INSERT INTO `positions`(`name`) VALUES (?)',
+        [req.body.name.trim()],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/positions');
+    
+}).put('/positions', function(req, res, next) {
+    connection.query(
+        'UPDATE `positions` SET `name`=? WHERE `id`=?',
+        [req.body.name.trim(), req.body.id],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/positions');
+    
+}).delete('/positions', function(req, res, next) {
+    connection.query(
+        'DELETE FROM `positions` WHERE `id`=?',
+        [req.body.id],
+        function (error, results, fields) { if (error) throw error;}
+    );
+    
+    res.redirect('back');
+});
+router.get('/position/:id', function(req, res, next) {
+    connection.query('SELECT * FROM `positions` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'position-edit', { title: 'Должность', data: results[0], csrfToken: req.csrfToken() } );
+    });
+    
+});
+
+// Tests
+router.get('/tests', function(req, res, next) {
+    connection.query('SELECT tests.id, tests.name, laboratories.name AS lab_name FROM tests LEFT JOIN laboratories ON tests.lab_id = laboratories.id LIMIT 10; SELECT * FROM laboratories LIMIT 10;', function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'tests', { title: 'Список проверок', data: results, csrfToken: req.csrfToken() } );
+    });
+    
+}).post('/tests', function(req, res, next) {
+    connection.query(
+        'INSERT INTO `tests`(`name`,`lab_id`) VALUES (?,?)',
+        [req.body.name.trim(), req.body.labId],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/tests');
+    
+}).put('/tests', function(req, res, next) {
+    connection.query(
+        'UPDATE `tests` SET `name`=?, `lab_id`=? WHERE `id`=?',
+        [req.body.name.trim(), req.body.labId, req.body.id],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/tests');
+    
+}).delete('/tests', function(req, res, next) {
+    connection.query(
+        'DELETE FROM `tests` WHERE `id`=?',
+        [req.body.id],
+        function (error, results, fields) { if (error) throw error;}
+    );
+    
+    res.redirect('back');
+});
+router.get('/test/:id', function(req, res, next) {
+    
+    connection.query('SELECT * FROM `tests` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'test-edit', { title: 'Должность', data: results[0], csrfToken: req.csrfToken() } );
+    });
+    
+});
 
 module.exports = router;

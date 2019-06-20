@@ -1,0 +1,32 @@
+extends layout
+
+block content
+    div(class="container")
+        form(
+            method="POST",
+            action="/positions?_method=PUT"
+        )
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken
+            )
+            input(
+                name="id",
+                type="hidden",
+                value=data.id
+            )
+            div(class="form-group")
+                label(for="name") Название
+                input(
+                    id="name",
+                    class="form-control",
+                    name="name",
+                    type="text",
+                    value=data.name
+                )
+            button(
+                type="submit",
+                class="btn btn-primary"
+            ) Сохранить изменения
+            a(href="/positions", class="btn btn-secondary") Отменить
