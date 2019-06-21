@@ -2,6 +2,7 @@ extends layout
 
 block content
     div(class="container")
+
         h3= title
 
         form(
@@ -24,8 +25,8 @@ block content
                     name="labId")
                     each item in data[1]
                         option(
-                        value=item.id,
-                        class="form-control"
+                            value=item.id,
+                            class="form-control"
                         )=item.name
                 div(class="col-sm-3")
                     button(
@@ -35,25 +36,27 @@ block content
 
         ul(class="list-group")
             each item in data[0]
-                li(class="list-group-item d-flex align-items-center")
-                    span(class="flex-grow-1")= item.name
-                    span(class="flex-grow-1")= item.lab_name
-                    a(
-                        href="/tests/" + item.id,
-                        class="btn btn-success"
-                    ) Изменить
-                    form(
-                        method="POST",
-                        action="/tests?_method=DELETE")
-                        input(
-                            type="hidden",
-                            name="_csrf",
-                            value=csrfToken)
-                        input(
-                            type="hidden",
-                            name="id",
-                            value=item.id)
-                        button(
-                            class="btn btn-danger",
-                            type="submit"
-                        ) Удалить
+                li(class="list-group-item align-items-center")
+                    div(class="row align-items-center")
+                        div(class="col-sm-4")= item.name
+                        div(class="col-sm-4")= item.lab_name
+                        div(class="col-sm-4 row")
+                            a(
+                                href="/tests/" + item.id,
+                                class="btn btn-success"
+                            ) Изменить
+                            form(
+                                method="POST",
+                                action="/tests?_method=DELETE")
+                                input(
+                                    type="hidden",
+                                    name="_csrf",
+                                    value=csrfToken)
+                                input(
+                                    type="hidden",
+                                    name="id",
+                                    value=item.id)
+                                button(
+                                    class="btn btn-danger",
+                                    type="submit"
+                                ) Удалить

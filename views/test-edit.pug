@@ -10,23 +10,24 @@ block content
                 name="_csrf",
                 value=csrfToken)
             div(class="form-group row")
-                div(class="col-sm-5")
+                div(class="col-sm-6")
                     input(
                         type="text",
                         class="form-control",
                         name="name",
-                        value="",
+                        value=data[0][0]['name'],
                         placeholder="Название")
                 select(
-                    class="col-sm-4",
+                    class="col-sm-6",
                     name="labId")
-                    each val, index in labArr
+                    each item in data[1]
                         option(
-                            value=index,
+                            value=item.id,
+                            selected=(data[0][0]['lab_id'] === item.id),
                             class="form-control"
-                        )= val
-                div(class="col-sm-3")
-                    button(
-                        class="btn btn-primary",
-                        type="submit"
-                    ) Добавить
+                        )= item.name
+            button(
+                class="btn btn-primary",
+                type="submit"
+            ) Сохранить изменения
+            a(href="javascript:history.back()", class="btn btn-secondary") Отменить

@@ -276,11 +276,12 @@ router.get('/tests', function(req, res, next) {
     
     res.redirect('back');
 });
-router.get('/test/:id', function(req, res, next) {
+router.get('/tests/:id', function(req, res, next) {
     
-    connection.query('SELECT * FROM `tests` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
+    connection.query('SELECT * FROM `tests` WHERE `id`=?; SELECT * FROM laboratories LIMIT 10;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'test-edit', { title: 'Должность', data: results[0], csrfToken: req.csrfToken() } );
+        console.log(results[0][0]);
+        res.render( 'test-edit', { title: 'Должность', data: results, csrfToken: req.csrfToken() } );
     });
     
 });
