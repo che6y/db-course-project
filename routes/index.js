@@ -114,49 +114,6 @@ router.get('/customers/:id', function(req, res, next) {
     
 });
 
-// Staff
-router.get('/staff', function(req, res, next) {
-    connection.query('SELECT * FROM `staff` LIMIT 10', function (error, results, fields) {
-        if (error) throw error;
-        res.render( 'staff', { title: 'Специалисты', data: results, csrfToken: req.csrfToken() } );
-    });
-
-}).post('/staff', function(req, res, next) {
-    connection.query(
-        'INSERT INTO `staff`(`name`, `surname`, `fathers_name`) VALUES (?,?,?)',
-        [req.body.name.trim(), req.body.surname.trim(), req.body.fathersName.trim()],
-        function (error, results, fields) { if (error) throw error; }
-    );
-
-    res.redirect('/staff');
-
-}).put('/staff', function(req, res, next) {
-    connection.query(
-        'UPDATE `staff` SET `name`=?, `surname`=?, `fathers_name`=? WHERE `id`=?',
-        [req.body.name.trim(), req.body.surname.trim(), req.body.fathersName.trim(), req.body.id],
-        function (error, results, fields) { if (error) throw error; }
-    );
-
-    res.redirect('/staff');
-
-}).delete('/staff', function(req, res, next) {
-    connection.query(
-        'DELETE FROM `staff` WHERE `id`=?',
-        [req.body.id],
-        function (error, results, fields) { if (error) throw error;}
-    );
-
-    res.redirect('back');
-});
-router.get('/staff/:id', function(req, res, next) {
-
-    connection.query('SELECT * FROM `staff` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
-        if (error) throw error;
-        res.render( 'staff-edit', { title: 'Сотрудник', data: results[0], csrfToken: req.csrfToken() } );
-    });
-
-});
-
 // Laboratories
 router.get('/laboratories', function(req, res, next) {
     connection.query('SELECT * FROM `laboratories` LIMIT 10', function (error, results, fields) {
@@ -200,32 +157,68 @@ router.get('/laboratory/:id', function(req, res, next) {
     
 });
 
-// Laboratories
-router.get('/positions', function(req, res, next) {
-    connection.query('SELECT * FROM `positions` LIMIT 10', function (error, results, fields) {
+// Staff
+router.get('/staff', function(req, res, next) {
+    connection.query('SELECT * FROM `staff` LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'positions', { title: 'Список должностей', data: results, csrfToken: req.csrfToken() } );
+        res.render( './staff/staff', { title: 'Специалисты', data: results, csrfToken: req.csrfToken() } );
     });
     
-}).post('/positions', function(req, res, next) {
+}).post('/staff', function(req, res, next) {
+    connection.query(
+        'INSERT INTO `staff`(`name`, `surname`, `fathers_name`) VALUES (?,?,?)',
+        [req.body.name.trim(), req.body.surname.trim(), req.body.fathersName.trim()],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/staff');
+    
+}).put('/staff', function(req, res, next) {
+    connection.query(
+        'UPDATE `staff` SET `name`=?, `surname`=?, `fathers_name`=? WHERE `id`=?',
+        [req.body.name.trim(), req.body.surname.trim(), req.body.fathersName.trim(), req.body.id],
+        function (error, results, fields) { if (error) throw error; }
+    );
+    
+    res.redirect('/staff');
+    
+}).delete('/staff', function(req, res, next) {
+    connection.query(
+        'DELETE FROM `staff` WHERE `id`=?',
+        [req.body.id],
+        function (error, results, fields) { if (error) throw error;}
+    );
+    
+    res.redirect('back');
+});
+
+
+// Staff positions
+router.get('/staff/positions', function(req, res, next) {
+    connection.query('SELECT positions.id, positions.name, laboratories.name AS lab_name FROM positions LEFT JOIN laboratories ON positions.lab_id = laboratories.id; SELECT * FROM `laboratories`;', function (error, results, fields) {
+        if (error) throw error;
+        res.render( './staff/positions', { title: 'Список должностей', data: results, csrfToken: req.csrfToken() } );
+    });
+    
+}).post('/staff/positions', function(req, res, next) {
     connection.query(
         'INSERT INTO `positions`(`name`) VALUES (?)',
         [req.body.name.trim()],
         function (error, results, fields) { if (error) throw error; }
     );
     
-    res.redirect('/positions');
+    res.redirect('/staff/positions');
     
-}).put('/positions', function(req, res, next) {
+}).put('/staff/positions', function(req, res, next) {
     connection.query(
         'UPDATE `positions` SET `name`=? WHERE `id`=?',
         [req.body.name.trim(), req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
     
-    res.redirect('/positions');
+    res.redirect('/staff/positions');
     
-}).delete('/positions', function(req, res, next) {
+}).delete('/staff/positions', function(req, res, next) {
     connection.query(
         'DELETE FROM `positions` WHERE `id`=?',
         [req.body.id],
@@ -234,10 +227,34 @@ router.get('/positions', function(req, res, next) {
     
     res.redirect('back');
 });
-router.get('/position/:id', function(req, res, next) {
+router.get('/staff/positions/:id', function(req, res, next) {
     connection.query('SELECT * FROM `positions` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'position-edit', { title: 'Должность', data: results[0], csrfToken: req.csrfToken() } );
+        console.log(results[0]);
+        res.render( './staff/position-edit', { title: 'Должность', data: results[0], csrfToken: req.csrfToken() } );
+    });
+    
+});
+
+router.get('/staff/add', function(req, res, next) {
+    connection.query(
+        'SELECT * FROM `positions`',
+        [ req.params.id ],
+        function (error, results, fields) {
+        if (error) throw error;
+        
+        res.render( './staff/staff-add', { title: 'Новый специалист', data: results, csrfToken: req.csrfToken() } );
+    });
+});
+
+router.get('/staff/:id', function(req, res, next) {
+    
+    connection.query(
+        'SELECT * FROM `staff` WHERE `id`=?',
+        [ req.params.id ],
+        function (error, results, fields) {
+        if (error) throw error;
+        res.render( './staff/staff-edit', { title: 'Cпециалист', data: results[0], csrfToken: req.csrfToken() } );
     });
     
 });
@@ -280,7 +297,6 @@ router.get('/tests/:id', function(req, res, next) {
     
     connection.query('SELECT * FROM `tests` WHERE `id`=?; SELECT * FROM laboratories LIMIT 10;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        console.log(results[0][0]);
         res.render( 'test-edit', { title: 'Должность', data: results, csrfToken: req.csrfToken() } );
     });
     

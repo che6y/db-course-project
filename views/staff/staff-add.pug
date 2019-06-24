@@ -1,0 +1,83 @@
+extends ../layout
+
+block content
+    include staff-nav.pug
+
+    div(class="container")
+        h3 Добавить нового специалиста
+        form(
+            method="POST",
+            action="/staff")
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken)
+
+            div(class="row")
+                div(class="form-group col-sm-6")
+                    label(for="new-item-surname") Фамилия
+                    input(
+                        id="new-item-surname",
+                        type="text",
+                        class="form-control",
+                        name="surname",
+                        value="")
+                div(class="form-group col-sm-6")
+                    label(for="new-item-name") Имя
+                    input(
+                        id="new-item-name",
+                        type="text",
+                        class="form-control",
+                        name="name",
+                        value="")
+                div(class="form-group col-sm-6")
+                    label(for="new-item-fathers-name") Отчество
+                    input(
+                        id="new-item-fathers-name",
+                        type="text",
+                        class="form-control",
+                        name="fathersName",
+                        value="")
+                div(class="form-group col-sm-6")
+                    label(for="new-item-position") Должность
+                    select(
+                        id="new-item-position",
+                        class="form-control",
+                        name="positionId")
+                        each item in data
+                            option(
+                                value=item.id,
+                                class="form-control"
+                            )=item.name
+                div(class="form-group col-sm-4")
+                    label(for="new-item-employment-date") Дата приёма на работу
+                    input(
+                        id="new-item-employment-date",
+                        type="text",
+                        class="form-control",
+                        name="empDate",
+                        value="")
+                div(class="form-group col-sm-4")
+                    label(for="new-item-dismissal-date") Дата увольнения
+                    input(
+                        id="new-item-dismissal-date",
+                        type="text",
+                        class="form-control",
+                        name="dismissalDate",
+                        value="")
+                div(class="form-group col-sm-4")
+                    label(for="new-item-employment-date") Ставка
+                    input(
+                        id="new-item-rate",
+                        type="number",
+                        min="1",
+                        step="1",
+                        class="form-control",
+                        name="empDate",
+                        value="")
+                div(class="form-group col-sm-12")
+                    button(
+                        class="btn btn-primary",
+                        type="submit"
+                    ) Добавить
+                    a(href="javascript:history.back()", class="btn btn-secondary") Отменить

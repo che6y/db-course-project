@@ -1,12 +1,14 @@
-extends layout
+extends ../layout
 
 block content
+    include staff-nav.pug
+
     div(class="container")
         h3= title
 
         form(
         method="POST",
-        action="/positions")
+        action="/staff/positions")
             input(
             type="hidden",
             name="_csrf",
@@ -19,12 +21,12 @@ block content
                     name="name",
                     value="",
                     placeholder="Название")
-                //select(class="col-sm-4")
-                //    each val, index in lab_arr
-                //        option(
-                //        value=index,
-                //        class="form-control"
-                        )= val
+                select(class="col-sm-4")
+                    each item in data[1]
+                        option(
+                        value=item.id,
+                        class="form-control"
+                        )= item.name
                 div(class="col-sm-3")
                     button(
                     class="btn btn-primary",
@@ -32,16 +34,17 @@ block content
                     ) Добавить
 
         ul(class="list-group")
-            each item in data
+            each item in data[0]
                 li(class="list-group-item d-flex align-items-center")
                     span(class="flex-grow-1")= item.name
+                    span(class="flex-grow-1")= item.lab_name
                     a(
-                    href="/positions/" + item.id,
+                    href="positions/" + item.id,
                     class="btn btn-success"
                     ) Изменить
                     form(
                     method="POST",
-                    action="/positions?_method=DELETE")
+                    action="/staff/positions?_method=DELETE")
                         input(
                         type="hidden",
                         name="_csrf",
