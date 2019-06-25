@@ -8,29 +8,27 @@ block content
 
         ul(class="list-group")
             each item in data
-                li(class="list-group-item d-flex align-items-center")
-                    span(class="flex-grow-1")= item.surname + " " + item.name + " " + item.fathers_name
-                    a(
-                    href="/staff/" + item.id,
-                    class="btn btn-success"
-                    ) Изменить
-                    form(
-                    method="POST",
-                    action="/staff?_method=DELETE")
-                        input(
-                            type="hidden",
-                            name="_csrf",
-                            value=csrfToken)
-                        input(
-                        type="hidden",
-                        name="id",
-                        value=item.id)
-                        button(
-                        class="btn btn-danger",
-                        type="submit"
-                        ) Удалить
-
-        div
-            a(
-                href="/staff/add",
-                class="btn btn-primary") Добавить специалиста
+                li(class="list-group-item")
+                    div(class="row")
+                        div(class="col-sm-5")= item.surname + " " + item.name + " " + item.fathers_name
+                        div(class="col-sm-4")= item.position_name
+                        div(class="col-sm-3 d-flex")
+                            a(
+                                href="/staff/" + item.id,
+                                class="btn btn-success"
+                                ) Изменить
+                            form(
+                                method="POST",
+                                action="/staff?_method=DELETE")
+                                input(
+                                    type="hidden",
+                                    name="_csrf",
+                                    value=csrfToken)
+                                input(
+                                    type="hidden",
+                                    name="id",
+                                    value=item.id)
+                                button(
+                                    class="btn btn-danger",
+                                    type="submit"
+                                    ) Удалить

@@ -3,50 +3,86 @@ extends ../layout
 block content
     include staff-nav.pug
 
-    div(class="container")
-        form(
+    h3= title + " " + data[0][0].surname + " " + data[0][0].name + " " + data[0][0].fathers_name
+
+    form(
         method="POST",
-        action="/staff?_method=PUT"
-        )
-            input(
+        action="/staff?_method=PUT")
+        input(
             type="hidden",
             name="_csrf",
-            value=csrfToken
-            )
-            input(
-            name="id",
+            value=csrfToken)
+        input(
             type="hidden",
-            value=data.id
-            )
-            div(class="form-group")
-                label(for="surname") Фамилия
+            name="id",
+            value=data[0][0].id)
+
+        div(class="row")
+            div(class="form-group col-sm-6")
+                label(for="new-item-surname") Фамилия
                 input(
-                id="surname",
-                class="form-control",
-                name="surname",
-                type="text",
-                value=data.surname
-                )
-            div(class="form-group")
-                label(for="") Имя
+                    id="new-item-surname",
+                    type="text",
+                    class="form-control",
+                    name="surname",
+                    value=data[0][0].surname)
+            div(class="form-group col-sm-6")
+                label(for="new-item-name") Имя
                 input(
-                id="name",
-                class="form-control",
-                name="name",
-                type="text",
-                value=data.name
-                )
-            div(class="form-group")
-                label(for="fathers-name") Имя
+                    id="new-item-name",
+                    type="text",
+                    class="form-control",
+                    name="name",
+                    value=data[0][0].name)
+            div(class="form-group col-sm-6")
+                label(for="new-item-fathers-name") Отчество
                 input(
-                id="fathers-name",
-                class="form-control",
-                name="fathersName",
-                type="text",
-                value=data.fathers_name
-                )
-            button(
-            type="submit",
-            class="btn btn-primary"
-            ) Сохранить изменения
-            a(href="javascript:history.back()", class="btn btn-secondary") Отменить
+                    id="new-item-fathers-name",
+                    type="text",
+                    class="form-control",
+                    name="fathersName",
+                    value=data[0][0].fathers_name)
+            div(class="form-group col-sm-6")
+                label(for="new-item-position") Должность
+                select(
+                    id="new-item-position",
+                    class="form-control",
+                    name="positionId")
+                    each item in data[1]
+                        option(
+                            value=item.id,
+                            class="form-control",
+                            selected=(data[0][0]['position_id'] === item.id)
+                        )=item.name
+            div(class="form-group col-sm-4")
+                label(for="new-item-employment-date") Дата приёма на работу
+                input(
+                    id="new-item-employment-date",
+                    type="text",
+                    class="form-control",
+                    name="empDate",
+                    value=data[0][0].employment_date)
+            div(class="form-group col-sm-4")
+                label(for="new-item-dismissal-date") Дата увольнения
+                input(
+                    id="new-item-dismissal-date",
+                    type="text",
+                    class="form-control",
+                    name="dismissalDate",
+                    value=data[0][0].dismissal_date)
+            div(class="form-group col-sm-4")
+                label(for="new-item-rate") Ставка
+                input(
+                    id="new-item-rate",
+                    type="number",
+                    min="1",
+                    step="1",
+                    class="form-control",
+                    name="rate",
+                    value=data[0][0].rate)
+            div(class="form-group col-sm-12")
+                button(
+                    class="btn btn-primary",
+                    type="submit"
+                ) Сохранить
+                a(href="javascript:history.back()", class="btn btn-secondary") Отменить
