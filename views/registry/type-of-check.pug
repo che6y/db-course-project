@@ -1,25 +1,31 @@
-extends layout
+extends ../layout
 
 block content
     div(class="container")
-        h3= title
 
         form(
             method="POST",
-            action="/laboratories")
+            action="/type-of-check"
+        )
             input(
                 type="hidden",
                 name="_csrf",
-                value=csrfToken)
+                value=csrfToken
+            )
             div(class="form-group row")
-                div(class="col-sm-2 offset-md-2") Добавить запись
-                div(class="col-sm-5")
+                label(
+                    for="new-item-name",
+                    class="col-form-label col-sm-3"
+                ) Добавить новую запись
+                div(class="col-sm-6")
                     input(
+                        id="new-item-name",
                         type="text",
                         class="form-control",
                         name="name",
                         value="",
-                        placeholder="Название Лаборатории")
+                        placeholder="Название проверки"
+                    )
                 div(class="col-sm-3")
                     button(
                         class="btn btn-primary",
@@ -31,20 +37,23 @@ block content
                 li(class="list-group-item d-flex align-items-center")
                     span(class="flex-grow-1")= item.name
                     a(
-                        href="/laboratory/" + item.id,
+                        href="/type-of-check/" + item.id,
                         class="btn btn-success"
-                    ) Изменить
+                        ) Изменить
                     form(
                         method="POST",
-                        action="/laboratories?_method=DELETE")
+                        action="/type-of-check?_method=DELETE"
+                    )
                         input(
                             type="hidden",
                             name="_csrf",
-                            value=csrfToken)
+                            value=csrfToken
+                        )
                         input(
                             type="hidden",
                             name="id",
-                            value=item.id)
+                            value=item.id
+                        )
                         button(
                             class="btn btn-danger",
                             type="submit"

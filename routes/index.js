@@ -14,12 +14,6 @@ router.use(csrf({ cookie: true }));
 router.get('/', function(req, res, next) {
     res.render('index', { title: 'Лаборатория' });
 });
-router.get('/registry', function(req, res, next) {
-    connection.query('SELECT * FROM `registry_reports` LIMIT 10', function (error, results, fields) {
-        if (error) throw error;
-        res.render('registry', { title: 'Прием проб', data: results });
-    });
-});
 
 router.get('/bacteriology', function(req, res, next) {
     res.render( 'bacteriology', { title: 'Бактериологическая лаборатория' } );
@@ -29,13 +23,19 @@ router.get('/chemistry', function(req, res, next) {
     res.render( 'chemistry', { title: 'Химическая лаборатория' } );
 });
 
+router.get('/registry', function(req, res, next) {
+    connection.query('SELECT * FROM `registry_reports` LIMIT 10', function (error, results, fields) {
+        if (error) throw error;
+        res.render('./registry/registry', { title: 'Прием проб', data: results });
+    });
+});
 
 // Type of check
 router.get('/type-of-check', function(req, res, next) {
     
     connection.query('SELECT * FROM `types_of_check` LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'type-of-check', { title: 'Вид проверки', data: results, csrfToken: req.csrfToken() } );
+        res.render( './registry/type-of-check', { title: 'Вид проверки', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/type-of-check', function(req, res, next) {
@@ -67,7 +67,7 @@ router.get('/type-of-check/:id', function(req, res, next) {
     
     connection.query('SELECT * FROM `types_of_check` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'type-of-check-item', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
+        res.render( './registry/type-of-check-item', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
     });
     
 });
@@ -77,7 +77,7 @@ router.get('/customers', function(req, res, next) {
     
     connection.query('SELECT * FROM `customers` LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'customers', { title: 'Заказчики', data: results, csrfToken: req.csrfToken() } );
+        res.render( './registry/customers', { title: 'Заказчики', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/customers', function(req, res, next) {
@@ -109,7 +109,7 @@ router.get('/customers/:id', function(req, res, next) {
     
     connection.query('SELECT * FROM `customers` WHERE `id`=?', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'customer-edit', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
+        res.render( './registry/customer-edit', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
     });
     
 });
@@ -118,7 +118,7 @@ router.get('/customers/:id', function(req, res, next) {
 router.get('/laboratories', function(req, res, next) {
     connection.query('SELECT * FROM `laboratories` LIMIT 10', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'laboratories', { title: 'Отделы', data: results, csrfToken: req.csrfToken() } );
+        res.render( './registry/laboratories', { title: 'Отделы', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/laboratories', function(req, res, next) {
@@ -152,7 +152,7 @@ router.get('/laboratory/:id', function(req, res, next) {
     
     connection.query('SELECT * FROM `laboratories` WHERE `id`=?;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'laboratory-edit', { title: 'Отделы', data: results[0], csrfToken: req.csrfToken() } );
+        res.render( './registry/laboratory-edit', { title: 'Отделы', data: results[0], csrfToken: req.csrfToken() } );
     });
     
 });
@@ -294,7 +294,7 @@ router.get('/tests', function(req, res, next) {
         'SELECT * FROM laboratories LIMIT 10;',
         function (error, results, fields) {
             if (error) throw error;
-            res.render( 'tests', { title: 'Список проверок', data: results, csrfToken: req.csrfToken() } );
+            res.render( './registry/tests', { title: 'Список проверок', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/tests', function(req, res, next) {
@@ -328,7 +328,7 @@ router.get('/tests/:id', function(req, res, next) {
     
     connection.query('SELECT * FROM tests WHERE id=?; SELECT * FROM laboratories;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'test-edit', { title: 'Должность', data: results, csrfToken: req.csrfToken() } );
+        res.render( './registry/test-edit', { title: 'Должность', data: results, csrfToken: req.csrfToken() } );
     });
     
 });

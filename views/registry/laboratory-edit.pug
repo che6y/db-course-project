@@ -1,10 +1,10 @@
-extends layout
+extends ../layout
 
 block content
     div(class="container")
         form(
             method="POST",
-            action="/type-of-check?_method=PUT"
+            action="/laboratories?_method=PUT"
         )
             input(
                 type="hidden",
@@ -17,16 +17,16 @@ block content
                 value=data.id
             )
             div(class="form-group")
-                label(for="name") Название проверки
+                label(for="name") Название
                 input(
                     id="name",
                     class="form-control",
                     name="name",
                     type="text",
                     value=data.name
-                    )
+                )
             button(
                 type="submit",
                 class="btn btn-primary"
-                ) Сохранить изменения
+            ) Сохранить изменения
             a(href="javascript:history.back()", class="btn btn-secondary") Отменить
