@@ -2,11 +2,44 @@ extends ../layout
 
 block content
     include registry-nav.pug
-    div(class="container")
-        h3= title
 
-        div(class="row")
-            div(class="col-sm-9")
-                ul
+    div(class="container")
+        div(class="d-flex")
+            h3(class="flex-grow-1")= title
+            a(class="btn btn-info" href="/registry/add") Добавить новую запись
+
+        div
+            table(class="table table-hover")
+                thead
+                    tr
+                        th(scope="col") Номер документа
+                        th(scope="col") Наименование
+                        th(scope="col") Исследование
+                        th(scope="col") Вид проверки
+                        th(scope="col") Заказчик
+                        th(scope="col") Действия
+                tbody
                     each item in data
-                        li= item.name
+                        tr
+                            td= item.registry_id
+                            td= item.name
+                            td= item.test_name
+                            td= item.type_name
+                            td= item.customer_name
+                            td
+                                div(class="d-flex")
+                                    a(href="/registry/" + item.id, class="btn btn-success btn-action")
+                                        i(class="fas fa-edit")
+                                    form(method="POST", action="/registry?_method=DELETE")
+                                        input(
+                                            type="hidden",
+                                            name="_csrf",
+                                            value=csrfToken)
+                                        input(
+                                            type="hidden",
+                                            name="id",
+                                            value=item.id)
+                                        button(
+                                            class="btn btn-danger btn-action",
+                                            type="submit")
+                                            i(class="fas fa-trash-alt")

@@ -1,21 +1,20 @@
 extends ../layout
 
 block content
+    include registry-nav.pug
+
     div(class="container")
         form(
             method="POST",
-            action="/type-of-check?_method=PUT"
-        )
+            action="/type-of-check?_method=PUT")
             input(
                 type="hidden",
                 name="_csrf",
-                value=csrfToken
-            )
+                value=csrfToken)
             input(
                 name="id",
                 type="hidden",
-                value=data.id
-            )
+                value=data.id)
             div(class="form-group")
                 label(for="name") Название проверки
                 input(
@@ -23,8 +22,8 @@ block content
                     class="form-control",
                     name="name",
                     type="text",
-                    value=data.name
-                    )
+                    value=data.name,
+                    required)
             button(
                 type="submit",
                 class="btn btn-primary"

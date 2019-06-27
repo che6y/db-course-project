@@ -6,57 +6,53 @@ block content
     div(class="container")
         h3= title
 
-        form(
-        method="POST",
-        action="/staff/positions")
+        form(method="POST", action="/staff/positions")
             input(
-            type="hidden",
-            name="_csrf",
-            value=csrfToken)
+                type="hidden",
+                name="_csrf",
+                value=csrfToken)
             div(class="form-group row")
                 div(class="col-sm-5")
                     input(
-                    type="text",
-                    class="form-control",
-                    name="name",
-                    value="",
-                    placeholder="Название")
-                select(class="col-sm-4")
+                        type="text",
+                        class="form-control",
+                        name="name",
+                        value="",
+                        placeholder="Название",
+                        required)
+                select(class="col-sm-4" name="labId")
                     each item in data[1]
                         option(
-                        value=item.id,
-                        class="form-control"
-                        )= item.name
+                            value=item.id,
+                            class="form-control"
+                            )= item.name
                 div(class="col-sm-3")
                     button(
-                    class="btn btn-primary",
-                    type="submit"
-                    ) Добавить
-
+                        class="btn btn-primary",
+                        type="submit"
+                        ) Добавить
         ul(class="list-group")
             each item in data[0]
-                li(class="list-group-item")
-                    div(class="row")
-                        div(class="col-sm-5")= item.name
-                        div(class="col-sm-4")= item.lab_name
-                        div(class="col-sm-3 row")
-                            div(class="d-flex")
-                                a(
-                                    href="positions/" + item.id,
-                                    class="btn btn-success"
-                                    ) Изменить
-                                form(
-                                    method="POST",
-                                    action="/staff/positions?_method=DELETE")
-                                        input(
-                                            type="hidden",
-                                            name="_csrf",
-                                            value=csrfToken)
-                                        input(
-                                            type="hidden",
-                                            name="id",
-                                            value=item.id)
-                                        button(
-                                            class="btn btn-danger",
-                                            type="submit"
-                                            ) Удалить
+                li(class="list-group-item d-flex align-items-center")
+                    div(class="row flex-grow-1")
+                        div(class="col-sm-6")= item.name
+                        div(class="col-sm-6")= item.lab_name
+                    a(
+                        href="positions/" + item.id,
+                        class="btn btn-success btn-action")
+                        i(class="fas fa-edit")
+                    form(
+                        method="POST",
+                        action="/staff/positions?_method=DELETE")
+                            input(
+                                type="hidden",
+                                name="_csrf",
+                                value=csrfToken)
+                            input(
+                                type="hidden",
+                                name="id",
+                                value=item.id)
+                            button(
+                                class="btn btn-danger btn-action",
+                                type="submit")
+                                i(class="fas fa-trash-alt")

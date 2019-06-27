@@ -1,10 +1,10 @@
 extends ../layout
 
 block content
+    include registry-nav.pug
+
     div(class="container")
-
         h3= title
-
         form(
             method="POST",
             action="/tests")
@@ -19,7 +19,8 @@ block content
                         class="form-control",
                         name="name",
                         value="",
-                        placeholder="Название")
+                        placeholder="Название",
+                        required)
                 select(
                     class="col-sm-4",
                     name="labId")
@@ -36,27 +37,27 @@ block content
 
         ul(class="list-group")
             each item in data[0]
-                li(class="list-group-item align-items-center")
-                    div(class="row align-items-center")
-                        div(class="col-sm-4")= item.name
-                        div(class="col-sm-4")= item.lab_name
-                        div(class="col-sm-4 row")
-                            a(
-                                href="/tests/" + item.id,
-                                class="btn btn-success"
-                            ) Изменить
-                            form(
-                                method="POST",
-                                action="/tests?_method=DELETE")
-                                input(
-                                    type="hidden",
-                                    name="_csrf",
-                                    value=csrfToken)
-                                input(
-                                    type="hidden",
-                                    name="id",
-                                    value=item.id)
-                                button(
-                                    class="btn btn-danger",
-                                    type="submit"
-                                ) Удалить
+                li(class="list-group-item d-flex align-items-center")
+                    div(class="row flex-grow-1")
+                        div(class="col-sm-6")= item.name
+                        div(class="col-sm-6")= item.lab_name
+
+                    a(
+                        href="/tests/" + item.id,
+                        class="btn btn-success btn-action")
+                        i(class="fas fa-edit")
+                    form(
+                        method="POST",
+                        action="/tests?_method=DELETE")
+                        input(
+                            type="hidden",
+                            name="_csrf",
+                            value=csrfToken)
+                        input(
+                            type="hidden",
+                            name="id",
+                            value=item.id)
+                        button(
+                            class="btn btn-danger btn-action",
+                            type="submit")
+                            i(class="fas fa-trash-alt")

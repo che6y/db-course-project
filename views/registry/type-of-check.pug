@@ -1,17 +1,16 @@
 extends ../layout
 
 block content
-    div(class="container")
+    include registry-nav.pug
 
+    div(class="container")
         form(
             method="POST",
-            action="/type-of-check"
-        )
+            action="/type-of-check")
             input(
                 type="hidden",
                 name="_csrf",
-                value=csrfToken
-            )
+                value=csrfToken)
             div(class="form-group row")
                 label(
                     for="new-item-name",
@@ -24,8 +23,8 @@ block content
                         class="form-control",
                         name="name",
                         value="",
-                        placeholder="Название проверки"
-                    )
+                        placeholder="Название проверки",
+                        required)
                 div(class="col-sm-3")
                     button(
                         class="btn btn-primary",
@@ -38,23 +37,20 @@ block content
                     span(class="flex-grow-1")= item.name
                     a(
                         href="/type-of-check/" + item.id,
-                        class="btn btn-success"
-                        ) Изменить
+                        class="btn btn-success btn-action")
+                        i(class="fas fa-edit")
                     form(
                         method="POST",
-                        action="/type-of-check?_method=DELETE"
-                    )
+                        action="/type-of-check?_method=DELETE")
                         input(
                             type="hidden",
                             name="_csrf",
-                            value=csrfToken
-                        )
+                            value=csrfToken)
                         input(
                             type="hidden",
                             name="id",
-                            value=item.id
-                        )
+                            value=item.id)
                         button(
-                            class="btn btn-danger",
-                            type="submit"
-                        ) Удалить
+                            class="btn btn-danger btn-action",
+                            type="submit")
+                            i(class="fas fa-trash-alt")

@@ -1,6 +1,8 @@
 extends ../layout
 
 block content
+    include registry-nav.pug
+
     div(class="container")
         h3= title
 
@@ -19,7 +21,8 @@ block content
                         class="form-control",
                         name="name",
                         value="",
-                        placeholder="Название Лаборатории")
+                        placeholder="Название Лаборатории",
+                        required)
                 div(class="col-sm-3")
                     button(
                         class="btn btn-primary",
@@ -32,8 +35,8 @@ block content
                     span(class="flex-grow-1")= item.name
                     a(
                         href="/laboratory/" + item.id,
-                        class="btn btn-success"
-                    ) Изменить
+                        class="btn btn-success btn-action")
+                        i(class="fas fa-edit")
                     form(
                         method="POST",
                         action="/laboratories?_method=DELETE")
@@ -46,6 +49,6 @@ block content
                             name="id",
                             value=item.id)
                         button(
-                            class="btn btn-danger",
-                            type="submit"
-                        ) Удалить
+                            class="btn btn-danger btn-action",
+                            type="submit")
+                            i(class="fas fa-trash-alt")

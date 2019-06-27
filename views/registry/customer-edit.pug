@@ -1,6 +1,8 @@
 extends ../layout
 
 block content
+    include registry-nav.pug
+
     div(class="container")
         form(
             method="POST",
@@ -27,7 +29,8 @@ block content
                         class="form-control",
                         name="name",
                         type="text",
-                        value=data.name
+                        value=data.name,
+                        required
                     )
             div(class="form-group row")
                 label(
@@ -40,7 +43,8 @@ block content
                         class="form-control"
                         name="address",
                         type="text",
-                        value=data.address
+                        value=data.address,
+                        required
                     )
             button(
                 type="submit",

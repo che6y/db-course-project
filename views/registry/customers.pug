@@ -1,8 +1,9 @@
-extends layout
+extends ../layout
 
 block content
-    div(class="container")
+    include registry-nav.pug
 
+    div(class="container")
         form(
             method="POST",
             action="/customers")
@@ -22,14 +23,16 @@ block content
                         class="form-control",
                         name="name",
                         value="",
-                        placeholder="Название")
+                        placeholder="Название",
+                        required)
                 div(class="col-sm-3")
                     input(
                         type="text",
                         class="form-control",
                         name="address",
                         value="",
-                        placeholder="Адрес")
+                        placeholder="Адрес",
+                        required)
                 div(class="col-sm-3")
                         button(
                             class="btn btn-primary",
@@ -39,11 +42,13 @@ block content
         ul(class="list-group")
             each item in data
                 li(class="list-group-item d-flex align-items-center")
-                    span(class="flex-grow-1")= item.name
+                    div(class="row flex-grow-1")
+                        div(class="col-sm-5")= item.name
+                        div(class="col-sm-7")= item.address
                     a(
                         href="/customers/" + item.id,
-                        class="btn btn-success"
-                    ) Изменить
+                        class="btn btn-success btn-action")
+                        i(class="fas fa-edit")
                     form(
                         method="POST",
                         action="/customers?_method=DELETE")
@@ -56,6 +61,6 @@ block content
                             name="id",
                             value=item.id)
                         button(
-                            class="btn btn-danger",
-                            type="submit"
-                        ) Удалить
+                            class="btn btn-danger btn-action",
+                            type="submit")
+                            i(class="fas fa-trash-alt")

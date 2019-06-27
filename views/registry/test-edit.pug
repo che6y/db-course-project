@@ -1,6 +1,8 @@
 extends ../layout
 
 block content
+    include registry-nav.pug
+
     div(class="container")
         form(
             method="POST",
@@ -20,7 +22,8 @@ block content
                         class="form-control",
                         name="name",
                         value=data[0][0]['name'],
-                        placeholder="Название")
+                        placeholder="Название",
+                        required)
                 select(
                     class="col-sm-6",
                     name="labId")
@@ -29,7 +32,7 @@ block content
                             value=item.id,
                             selected=(data[0][0]['lab_id'] === item.id),
                             class="form-control"
-                        )= item.name
+                            )= item.name
             button(
                 class="btn btn-primary",
                 type="submit"

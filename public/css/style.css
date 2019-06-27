@@ -27,6 +27,14 @@ h3 {
     margin: 0 10px 0 0;
 }
 
+.btn.btn-action {
+    width: 40px;
+    height: 40px;
+}
+.btn.btn-info {
+    height: 40px;
+}
+
 .nav-menu .nav-link {
     font-size: 18px;
     color: #000;

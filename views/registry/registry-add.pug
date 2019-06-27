@@ -1,0 +1,85 @@
+extends ../layout
+
+block content
+    include registry-nav.pug
+
+    div(class="container")
+        h3= title
+
+        form(
+            method="POST",
+            action="/registry")
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken)
+
+            div(class="row")
+                div(class="form-group col-sm-6")
+                    label(for="registry-number") Номер документа приема проб
+                    input(
+                        id="registry-number",
+                        type="text",
+                        class="form-control",
+                        name="registryId",
+                        value="",
+                        required)
+                div(class="form-group col-sm-6")
+                    label(for="name") Наименование Исследуемого материала
+                    input(
+                        id="name",
+                        type="text",
+                        class="form-control",
+                        name="name",
+                        value="",
+                        required)
+                div(class="form-group col-sm-6")
+                    label(for="type-of-check") Вид проверки
+                    select(
+                        id="type-of-check",
+                        class="form-control",
+                        name="typeId")
+                        each item in data[0]
+                            option(
+                                value=item.id,
+                                class="form-control"
+                            )=item.name
+                div(class="form-group col-sm-6")
+                    label(for="test") Исследование
+                    select(
+                        id="test",
+                        class="form-control",
+                        name="testId")
+                        each item in data[1]
+                            option(
+                                value=item.id,
+                                class="form-control"
+                            )=item.name
+                div(class="form-group col-sm-6")
+                    label(for="customer") Заказчик
+                    select(
+                        id="customer",
+                        class="form-control",
+                        name="customerId")
+                        each item in data[2]
+                            option(
+                                value=item.id,
+                                class="form-control"
+                            )=item.name
+                div(class="form-group col-sm-6")
+                    label(for="staff") Принял
+                    select(
+                        id="staff",
+                        class="form-control",
+                        name="staffId")
+                        each item in data[3]
+                            option(
+                                value=item.id,
+                                class="form-control"
+                            )= item.surname + " " + item.name.substring(0,1) + "." + item.fathers_name.substring(0,1)
+                div(class="form-group col-sm-12")
+                    button(
+                        class="btn btn-primary",
+                        type="submit"
+                    ) Добавить
+                    a(href="javascript:history.back()", class="btn btn-secondary") Отменить

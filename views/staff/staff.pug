@@ -4,31 +4,30 @@ block content
     include staff-nav.pug
 
     div(class="container")
-        h3= title
+        div(class="d-flex")
+            h3(class="flex-grow-1")= title
+            a(class="btn btn-info" href="/staff/add") Добавить нового специалиста
 
         ul(class="list-group")
             each item in data
-                li(class="list-group-item")
-                    div(class="row")
+                li(class="list-group-item d-flex align-items-center")
+                    div(class="row flex-grow-1")
                         div(class="col-sm-5")= item.surname + " " + item.name + " " + item.fathers_name
                         div(class="col-sm-4")= item.position_name
-                        div(class="col-sm-3 d-flex")
-                            a(
-                                href="/staff/" + item.id,
-                                class="btn btn-success"
-                                ) Изменить
-                            form(
-                                method="POST",
-                                action="/staff?_method=DELETE")
-                                input(
-                                    type="hidden",
-                                    name="_csrf",
-                                    value=csrfToken)
-                                input(
-                                    type="hidden",
-                                    name="id",
-                                    value=item.id)
-                                button(
-                                    class="btn btn-danger",
-                                    type="submit"
-                                    ) Удалить
+                    a(
+                        href="/staff/" + item.id,
+                        class="btn btn-success btn-action")
+                        i(class="fas fa-edit")
+                    form(method="POST", action="/staff?_method=DELETE")
+                        input(
+                            type="hidden",
+                            name="_csrf",
+                            value=csrfToken)
+                        input(
+                            type="hidden",
+                            name="id",
+                            value=item.id)
+                        button(
+                            class="btn btn-danger btn-action",
+                            type="submit")
+                            i(class="fas fa-trash-alt")
