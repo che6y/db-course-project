@@ -16,4 +16,11 @@ jQuery(function($) {
     
     $('#new-item-dismissal-date').datepicker(datepickerConfig);
     
+    $('#analysis-date').datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        minDate: '-2d',
+        maxDate: new Date()
+    });
+    
 });

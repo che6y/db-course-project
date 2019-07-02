@@ -1,0 +1,71 @@
+extends layout
+
+block content
+    div(class="container")
+        h3= title
+        form(
+            method="POST",
+            action="/lab-reports")
+            input(
+                type="hidden",
+                name="_csrf",
+                value=csrfToken)
+
+            div(class="row")
+                div(class="form-group col-sm-6")
+                    label(for="registry-id") Номер документа приема проб
+                    select(
+                        id="registry-id",
+                        class="form-control",
+                        name="registryId")
+                        each item in data[0]
+                            option(
+                                value=item.registry_id,
+                                class="form-control"
+                            )=item.registry_id
+                div(class="form-group col-sm-6")
+                    label(for="staff-id") Отвественный за результат
+                    select(
+                        id="staff-id",
+                        class="form-control",
+                        name="staffId")
+                        each item in data[1]
+                            option(
+                                value=item.id,
+                                class="form-control"
+                            )=item.surname + ' ' + item.name.substring(0,1) + '.' + item.fathers_name.substring(0,1) + '.'
+                div(class="form-group col-sm-4")
+                    label(for="lab-id") Лаборатория
+                    select(
+                        id="lab-id",
+                        class="form-control",
+                        name="labId")
+                        each item in data[2]
+                            option(
+                                value=item.id,
+                                class="form-control"
+                            )=item.name
+
+                div(class="form-group col-sm-4")
+                    label(for="analysis-date") Дата проведения анализа
+                    input(
+                        id="analysis-date",
+                        type="text",
+                        class="form-control",
+                        name="analysisDate",
+                        value="",
+                        required)
+                div(class="form-group col-sm-4")
+                    label(for="deviation") Наличие отклонения от нормы
+                    input(
+                        id="deviation",
+                        class="form-control",
+                        name="deviation",
+                        type="checkbox",
+                        value="0")
+                div(class="form-group col-sm-12")
+                    button(
+                        class="btn btn-primary",
+                        type="submit"
+                    ) Добавить
+                    a(href="javascript:history.back()", class="btn btn-secondary") Отменить

@@ -15,14 +15,75 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Лаборатория' });
 });
 
-router.get('/bacteriology', function(req, res, next) {
-    res.render( 'bacteriology', { title: 'Бактериологическая лаборатория' } );
+// Lab reports
+router.get('/lab-reports', function(req, res, next) {
+    connection.query('SELECT lr.id, lr.registry_id, lr.deviation, lr.analysis_date, staff.name, staff.surname, staff.fathers_name ' +
+        'FROM laboratory_reports AS lr ' +
+        'LEFT JOIN staff ' +
+        'ON lr.staff_id = staff.id ' +
+        'ORDER BY lr.id DESC ' +
+        'LIMIT 50;' +
+        'SELECT * FROM laboratories; ' +
+        'SELECT registry_id FROM registry_reports; ' +
+        'SELECT * FROM staff;', function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'lab-reports', { title: 'Химическая лаборатория', data: results, csrfToken: req.csrfToken() } );
+    });
+}).post('/lab-reports', function(req, res, next) {
+        connection.query(
+            'INSERT INTO laboratory_reports (registry_id, staff_id, deviation, lab_id, analysis_date) ' +
+            'VALUES (?,?,?,?,?)',
+            [req.body.registryId, req.body.staffId, req.body.deviation, req.body.labId, req.body.analysisDate],
+            function (error, results, fields) {
+                if (error) throw error;
+                res.redirect('/lab-reports');
+            }
+        );
+    }
+).put('/lab-reports', function(req, res, next) {
+        connection.query(
+            'UPDATE laboratory_reports ' +
+            'SET registry_id=?, staff_id=?, deviation=?, lab_id=? ' +
+            'WHERE id=?;',
+            [req.body.registryId, req.body.staffId, req.body.deviation, req.body.labId, req.body.id],
+            function (error, results, fields) { if (error) throw error; }
+        );
+        
+        res.redirect('/lab-reports');
+    }
+).delete('/lab-reports', function(req, res, next) {
+        connection.query(
+            'DELETE FROM laboratory_reports WHERE id=?',
+            [req.body.id],
+            function (error, results, fields) { if (error) throw error;}
+        );
+        
+        res.redirect('back');
+    }
+);
+router.get('/lab-reports/add', function(req, res, next) {
+    connection.query(
+        'SELECT registry_id, id FROM registry_reports; ' +
+        'SELECT * FROM staff; ' +
+        'SELECT * FROM laboratories;',function (error, results, fields) {
+            if (error) throw error;
+            res.render( 'lab-report-add', { title: 'Добавить запись', data: results, csrfToken: req.csrfToken() } );
+        });
+    
+});
+router.get('/lab-reports/:id', function(req, res, next) {
+    connection.query('SELECT * FROM laboratory_reports WHERE id=?; ' +
+        'SELECT registry_id, id FROM registry_reports; ' +
+        'SELECT * FROM staff; ' +
+        'SELECT * FROM laboratories;', [ req.params.id ],function (error, results, fields) {
+        if (error) throw error;
+        res.render( 'lab-report-edit', { title: results[0][0].name + ' - Изменить', data: results, csrfToken: req.csrfToken() } );
+    });
+    
 });
 
-router.get('/chemistry', function(req, res, next) {
-    res.render( 'chemistry', { title: 'Химическая лаборатория' } );
-});
 
+// Registry
 router.get('/registry', function(req, res, next) {
     connection.query(
         'SELECT rr.id, rr.registry_id, rr.name, tests.name AS test_name, types_of_check.name AS type_name, customers.name AS customer_name ' +
@@ -35,7 +96,8 @@ router.get('/registry', function(req, res, next) {
     });
 }).post('/registry', function(req, res, next) {
         connection.query(
-            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, staff_id) VALUES (?,?,?,?,?,?)',
+            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, staff_id) ' +
+            'VALUES (?,?,?,?,?,?)',
             [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId],
             function (error, results, fields) {
                 if (error) throw error;
@@ -45,7 +107,9 @@ router.get('/registry', function(req, res, next) {
     }
 ).put('/registry', function(req, res, next) {
         connection.query(
-            'UPDATE registry_reports SET name=?, registry_id=?, customer_id=?, test_id=?, type_id=?, staff_id=? WHERE id=?;',
+            'UPDATE registry_reports ' +
+            'SET name=?, registry_id=?, customer_id=?, test_id=?, type_id=?, staff_id=? ' +
+            'WHERE id=?;',
             [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId, req.body.id],
             function (error, results, fields) { if (error) throw error; }
         );
@@ -63,8 +127,11 @@ router.get('/registry', function(req, res, next) {
     }
 );
 router.get('/registry/add', function(req, res, next) {
-    
-    connection.query('SELECT * FROM types_of_check; SELECT id, name FROM tests; SELECT id, name FROM customers; SELECT * FROM staff;',function (error, results, fields) {
+    connection.query(
+        'SELECT * FROM types_of_check; ' +
+        'SELECT id, name FROM tests; ' +
+        'SELECT id, name FROM customers; ' +
+        'SELECT * FROM staff;',function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/registry-add', { title: 'Добавить запись', data: results, csrfToken: req.csrfToken() } );
     });
@@ -84,22 +151,21 @@ router.get('/registry/:id', function(req, res, next) {
 
 // Type of check
 router.get('/type-of-check', function(req, res, next) {
-    
-    connection.query('SELECT * FROM types_of_check LIMIT 10', function (error, results, fields) {
+    connection.query('SELECT * FROM types_of_check ORDER BY id DESC LIMIT 10;', function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/type-of-check', { title: 'Вид проверки', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/type-of-check', function(req, res, next) {
     connection.query(
-        'INSERT INTO types_of_check(name) VALUES (?)',
+        'INSERT INTO types_of_check(name) VALUES (?);',
         [req.body.name],
         function (error, results, fields) { if (error) throw error; }
     );
     res.redirect('/type-of-check');
 }).put('/type-of-check', function(req, res, next) {
     connection.query(
-        'UPDATE types_of_check SET name=? WHERE id=?',
+        'UPDATE types_of_check SET name=? WHERE id=?;',
         [req.body.name, req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -108,7 +174,7 @@ router.get('/type-of-check', function(req, res, next) {
     
 }).delete('/type-of-check', function(req, res, next) {
     connection.query(
-        'DELETE FROM types_of_check WHERE id=?',
+        'DELETE FROM types_of_check WHERE id=?;',
         [req.body.id],
         function (error, results, fields) { if (error) throw error;}
     );
@@ -117,7 +183,7 @@ router.get('/type-of-check', function(req, res, next) {
 });
 router.get('/type-of-check/:id', function(req, res, next) {
     
-    connection.query('SELECT * FROM types_of_check WHERE id=?', [ req.params.id ],function (error, results, fields) {
+    connection.query('SELECT * FROM types_of_check WHERE id=?;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/type-of-check-item', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
     });
@@ -127,21 +193,21 @@ router.get('/type-of-check/:id', function(req, res, next) {
 // Customers
 router.get('/customers', function(req, res, next) {
     
-    connection.query('SELECT * FROM customers LIMIT 10', function (error, results, fields) {
+    connection.query('SELECT * FROM customers ORDER BY name ASC LIMIT 20;', function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/customers', { title: 'Заказчики', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/customers', function(req, res, next) {
     connection.query(
-        'INSERT INTO customers(name,address) VALUES (?,?)',
+        'INSERT INTO customers(name,address) VALUES (?,?);',
         [req.body.name, req.body.address],
         function (error, results, fields) { if (error) throw error; }
     );
     res.redirect('/customers');
 }).put('/customers', function(req, res, next) {
     connection.query(
-        'UPDATE customers SET name=?, address=? WHERE id=?',
+        'UPDATE customers SET name=?, address=? WHERE id=?;',
         [req.body.name, req.body.address, req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -150,7 +216,7 @@ router.get('/customers', function(req, res, next) {
     
 }).delete('/customers', function(req, res, next) {
     connection.query(
-        'DELETE FROM customers WHERE id=?',
+        'DELETE FROM customers WHERE id=?;',
         [req.body.id],
         function (error, results, fields) { if (error) throw error;}
     );
@@ -159,7 +225,7 @@ router.get('/customers', function(req, res, next) {
 });
 router.get('/customers/:id', function(req, res, next) {
     
-    connection.query('SELECT * FROM customers WHERE id=?', [ req.params.id ],function (error, results, fields) {
+    connection.query('SELECT * FROM customers WHERE id=?;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/customer-edit', { title: results[0].name + ' - Изменить', data: results[0], csrfToken: req.csrfToken() } );
     });
@@ -168,14 +234,14 @@ router.get('/customers/:id', function(req, res, next) {
 
 // Laboratories
 router.get('/laboratories', function(req, res, next) {
-    connection.query('SELECT * FROM laboratories LIMIT 10', function (error, results, fields) {
+    connection.query('SELECT * FROM laboratories ORDER BY name ASC LIMIT 10;', function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/laboratories', { title: 'Отделы', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/laboratories', function(req, res, next) {
     connection.query(
-        'INSERT INTO laboratories(name) VALUES (?)',
+        'INSERT INTO laboratories(name) VALUES (?);',
         [req.body.name.trim()],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -184,7 +250,7 @@ router.get('/laboratories', function(req, res, next) {
     
 }).put('/laboratories', function(req, res, next) {
     connection.query(
-        'UPDATE laboratories SET name=? WHERE id=?',
+        'UPDATE laboratories SET name=? WHERE id=?;',
         [req.body.name.trim(), req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -193,7 +259,7 @@ router.get('/laboratories', function(req, res, next) {
     
 }).delete('/laboratories', function(req, res, next) {
     connection.query(
-        'DELETE FROM laboratories WHERE id=?',
+        'DELETE FROM laboratories WHERE id=?;',
         [req.body.id],
         function (error, results, fields) { if (error) throw error;}
     );
@@ -217,7 +283,8 @@ router.get('/staff', function(req, res, next) {
         'LEFT JOIN position_held ' +
         'ON staff.id = position_held.staff_id ' +
         'LEFT JOIN positions ' +
-        'ON positions.id = position_held.position_id;',
+        'ON positions.id = position_held.position_id ' +
+        'ORDER BY surname ASC;',
         function (error, results, fields) {
         if (error) throw error;
         res.render( './staff/staff', { title: 'Список специалистов', data: results, csrfToken: req.csrfToken() } );
@@ -267,14 +334,20 @@ router.get('/staff', function(req, res, next) {
 
 // Staff positions
 router.get('/staff/positions', function(req, res, next) {
-    connection.query('SELECT positions.id, positions.name, laboratories.name AS lab_name FROM positions LEFT JOIN laboratories ON positions.lab_id = laboratories.id; SELECT * FROM laboratories;', function (error, results, fields) {
+    connection.query(
+        'SELECT positions.id, positions.name, laboratories.name AS lab_name ' +
+        'FROM positions ' +
+        'LEFT JOIN laboratories ' +
+        'ON positions.lab_id = laboratories.id ' +
+        'ORDER BY positions.name LIMIT 30; ' +
+        'SELECT * FROM laboratories;', function (error, results, fields) {
         if (error) throw error;
         res.render( './staff/positions', { title: 'Список должностей', data: results, csrfToken: req.csrfToken() } );
     });
     
 }).post('/staff/positions', function(req, res, next) {
     connection.query(
-        'INSERT INTO positions(name, lab_id) VALUES (?,?)',
+        'INSERT INTO positions(name, lab_id) VALUES (?,?);',
         [req.body.name.trim(), req.body.labId],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -283,7 +356,7 @@ router.get('/staff/positions', function(req, res, next) {
     
 }).put('/staff/positions', function(req, res, next) {
     connection.query(
-        'UPDATE positions SET name=? WHERE id=?',
+        'UPDATE positions SET name=? WHERE id=?;',
         [req.body.name.trim(), req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -292,7 +365,7 @@ router.get('/staff/positions', function(req, res, next) {
     
 }).delete('/staff/positions', function(req, res, next) {
     connection.query(
-        'DELETE FROM positions WHERE id=?',
+        'DELETE FROM positions WHERE id=?;',
         [req.body.id],
         function (error, results, fields) { if (error) throw error;}
     );
@@ -310,7 +383,7 @@ router.get('/staff/positions/:id', function(req, res, next) {
 
 router.get('/staff/add', function(req, res, next) {
     connection.query(
-        'SELECT * FROM positions',
+        'SELECT * FROM positions;',
         [ req.params.id ],
         function (error, results, fields) {
         if (error) throw error;
@@ -326,7 +399,8 @@ router.get('/staff/:id', function(req, res, next) {
             'LEFT JOIN position_held ' +
             'ON staff.id = position_held.staff_id ' +
             'LEFT JOIN positions ' +
-            'ON positions.id = position_held.position_id WHERE staff.id=?;' +
+            'ON positions.id = position_held.position_id ' +
+            'WHERE staff.id=?;' +
             'SELECT * FROM positions;',
         [ req.params.id ],
         function (error, results, fields) {
@@ -353,7 +427,7 @@ router.get('/tests', function(req, res, next) {
     
 }).post('/tests', function(req, res, next) {
     connection.query(
-        'INSERT INTO tests(name,lab_id) VALUES (?,?)',
+        'INSERT INTO tests(name,lab_id) VALUES (?,?);',
         [req.body.name.trim(), req.body.labId],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -362,7 +436,7 @@ router.get('/tests', function(req, res, next) {
     
 }).put('/tests', function(req, res, next) {
     connection.query(
-        'UPDATE tests SET name=?, lab_id=? WHERE id=?',
+        'UPDATE tests SET name=?, lab_id=? WHERE id=?;',
         [req.body.name.trim(), req.body.labId, req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
@@ -380,7 +454,9 @@ router.get('/tests', function(req, res, next) {
 });
 router.get('/tests/:id', function(req, res, next) {
     
-    connection.query('SELECT * FROM tests WHERE id=?; SELECT * FROM laboratories;', [ req.params.id ],function (error, results, fields) {
+    connection.query(
+        'SELECT * FROM tests WHERE id=?; ' +
+        'SELECT * FROM laboratories;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/test-edit', { title: 'Должность', data: results, csrfToken: req.csrfToken() } );
     });

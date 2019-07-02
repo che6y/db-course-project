@@ -8,6 +8,7 @@
   "dependencies": {
     "cookie-parser": "^1.4.4",
     "csurf": "^1.10.0",
+    "db-migrate": "^0.11.6",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "express-validator": "^5.3.1",

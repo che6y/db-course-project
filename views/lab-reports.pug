@@ -1,0 +1,40 @@
+extends layout
+
+block content
+    div(class="container")
+        div(class="d-flex")
+            h3(class="flex-grow-1")= title
+            a(class="btn btn-info" href="/lab-reports/add") Добавить новую запись
+
+        table(class="table table-hover")
+            thead
+                tr
+                    th(scope="col") Номер документа приема проб
+                    th(scope="col") Ответственный
+                    th(scope="col") Наличие отклонений от нормы
+                    th(scope="col") Дата проведения анализа
+                    th(scope="col") Действия
+            tbody
+                each item in data[0]
+                    tr
+                        td= item.registry_id
+                        td= item.surname + ' ' + item.name.substring(0,1) + '.' + item.fathers_name.substring(0,1) + '.'
+                        td= item.deviation === 1 ? "+" : "-"
+                        td= item.analysis_date.toISOString().substring(0,10)
+                        td
+                            div(class="d-flex")
+                                a(href="/lab-reports/" + item.id, class="btn btn-success btn-action")
+                                    i(class="fas fa-edit")
+                                form(method="POST", action="/lab-reports?_method=DELETE")
+                                    input(
+                                        type="hidden",
+                                        name="_csrf",
+                                        value=csrfToken)
+                                    input(
+                                        type="hidden",
+                                        name="id",
+                                        value=item.id)
+                                    button(
+                                        class="btn btn-danger btn-action",
+                                        type="submit")
+                                        i(class="fas fa-trash-alt")
