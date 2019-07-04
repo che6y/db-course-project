@@ -6,7 +6,19 @@ block content
     div(class="container")
         div(class="d-flex")
             h3(class="flex-grow-1")= title
-            a(class="btn btn-info" href="/registry/add") Добавить новую запись
+            a(class="btn btn-info" href="/registry/add") Добавить
+            button(
+                type="button"
+                class="btn btn-info"
+                data-toggle="modal"
+                data-target="#sortingForm"
+                ) Упорядочить
+            button(
+                type="button"
+                class="btn btn-info"
+                data-toggle="modal"
+                data-target="#findForm"
+                ) Найти
 
         div
             table(class="table table-hover")
@@ -30,16 +42,120 @@ block content
                                 div(class="d-flex")
                                     a(href="/registry/" + item.id, class="btn btn-success btn-action")
                                         i(class="fas fa-edit")
-                                    form(method="POST", action="/registry?_method=DELETE")
+                                    form(method="POST" action="/registry?_method=DELETE")
                                         input(
-                                            type="hidden",
-                                            name="_csrf",
+                                            type="hidden"
+                                            name="_csrf"
                                             value=csrfToken)
                                         input(
-                                            type="hidden",
-                                            name="id",
+                                            type="hidden"
+                                            name="id"
                                             value=item.id)
                                         button(
-                                            class="btn btn-danger btn-action",
+                                            class="btn btn-danger btn-action"
                                             type="submit")
                                             i(class="fas fa-trash-alt")
+            // Modals
+            div(
+                class="modal fade"
+                id="findForm"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="findFormLabel"
+                aria-hidden="true")
+                div(class="modal-dialog" role="document")
+                    div(class="modal-content")
+                        div(class="modal-header")
+                            h5(class="modal-title" id="findFormLabel") Найти запись
+                            button(
+                                type="button"
+                                class="close"
+                                data-dismiss="modal"
+                                aria-label="Close")
+                                span(aria-hidden="true") &times;
+                        div(class="modal-body")
+                            form(method="POST" action="/registry/search")
+                                input(
+                                    type="hidden"
+                                    name="_csrf"
+                                    value=csrfToken)
+                                div(class="form-group")
+                                    label(for="find-by") Найти запись по
+                                    select(
+                                        id="find-by",
+                                        class="form-control",
+                                        name="findBy")
+                                        option(value="name" class="form-control") Имени
+                                        option(value="customer" class="form-control") Заказчику
+                                        option(value="registry_id" class="form-control") Номеру документа
+
+                                div(class="form-group")
+                                    label(for="word") Слово
+                                    input(
+                                        id="word"
+                                        type="text"
+                                        class="form-control"
+                                        name="word"
+                                        value=""
+                                        required)
+                                button(
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    ) Найти
+                                button(
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    data-dismiss="modal"
+                                ) Отменить
+            div(
+                class="modal fade"
+                id="sortingForm"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="sortingFormLabel"
+                aria-hidden="true")
+                div(class="modal-dialog" role="document")
+                    div(class="modal-content")
+                        div(class="modal-header")
+                            h5(class="modal-title" id="sortingFormLabel") Упорядочить
+                            button(
+                                type="button"
+                                class="close"
+                                data-dismiss="modal"
+                                aria-label="Close")
+                                span(aria-hidden="true") &times;
+                        div(class="modal-body")
+                            form(method="POST" action="/registry/order")
+                                input(
+                                    type="hidden"
+                                    name="_csrf"
+                                    value=csrfToken)
+                                div(class="form-group")
+                                    label(for="order-by") Выберите колонку
+                                    select(
+                                        id="order-by",
+                                        class="form-control",
+                                        name="orderBy")
+                                        option(value="registry_id" class="form-control") Номеру документа
+                                        option(value="name" class="form-control") Имени
+                                        option(value="customer_name" class="form-control") Заказчику
+                                        option(value="test_name" class="form-control") Исследованию
+                                        option(value="type_name" class="form-control") Видy проверки
+
+                                div(class="form-group")
+                                    label(for="order") Упорядочить по
+                                    select(
+                                        id="order",
+                                        class="form-control",
+                                        name="order")
+                                        option(value="desc" class="form-control") Убыванию
+                                        option(value="asc" class="form-control") Возрастанию
+                                button(
+                                    type="submit"
+                                    class="btn btn-primary"
+                                ) Упорядочить
+                                button(
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    data-dismiss="modal"
+                                ) Отменить

@@ -12,16 +12,28 @@ block content
             input(
                 name="id",
                 type="hidden",
-                value=data.id)
-            div(class="form-group")
-                label(for="name") Название
-                input(
-                    id="name",
-                    class="form-control",
-                    name="name",
-                    type="text",
-                    value=data.name,
-                    required)
+                value=data[0][0].id)
+            div(class="row")
+                div(class="form-group col-sm-6")
+                    label(for="name") Название
+                    input(
+                        id="name",
+                        class="form-control",
+                        name="name",
+                        type="text",
+                        value=data[0][0].name,
+                        required)
+                div(class="form-group col-sm-6")
+                    label(for="lab-id") Лаборатория
+                    select(
+                        name="labId",
+                        id="lab-id",
+                        class="form-control")
+                        each item in data[1]
+                            option(
+                                value=item.id,
+                                selected=(item.id === data[0][0].lab_id)
+                                )= item.name
             button(
                 type="submit",
                 class="btn btn-primary"

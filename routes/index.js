@@ -27,12 +27,11 @@ router.get('/lab-reports', function(req, res, next) {
         'SELECT registry_id FROM registry_reports; ' +
         'SELECT * FROM staff;', function (error, results, fields) {
         if (error) throw error;
-        res.render( 'lab-reports', { title: 'Химическая лаборатория', data: results, csrfToken: req.csrfToken() } );
+        res.render( 'lab-reports', { title: 'Результаты анализов', data: results, csrfToken: req.csrfToken() } );
     });
 }).post('/lab-reports', function(req, res, next) {
         connection.query(
-            'INSERT INTO laboratory_reports (registry_id, staff_id, deviation, lab_id, analysis_date) ' +
-            'VALUES (?,?,?,?,?)',
+            'INSERT INTO laboratory_reports (registry_id, staff_id, deviation, lab_id, analysis_date) VALUES (?,?,?,?,?);',
             [req.body.registryId, req.body.staffId, req.body.deviation, req.body.labId, req.body.analysisDate],
             function (error, results, fields) {
                 if (error) throw error;
@@ -77,7 +76,7 @@ router.get('/lab-reports/:id', function(req, res, next) {
         'SELECT * FROM staff; ' +
         'SELECT * FROM laboratories;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( 'lab-report-edit', { title: results[0][0].name + ' - Изменить', data: results, csrfToken: req.csrfToken() } );
+        res.render( 'lab-report-edit', { title: 'Изменить запись', data: results, csrfToken: req.csrfToken() } );
     });
     
 });
@@ -90,14 +89,14 @@ router.get('/registry', function(req, res, next) {
         'FROM registry_reports AS rr ' +
         'LEFT JOIN tests ON rr.test_id = tests.id ' +
         'LEFT JOIN types_of_check ON rr.type_id = types_of_check.id ' +
-        'LEFT JOIN customers ON rr.customer_id = customers.id', function (error, results, fields) {
+        'LEFT JOIN customers ON rr.customer_id = customers.id ' +
+        'ORDER BY rr.id DESC', function (error, results, fields) {
         if (error) throw error;
         res.render('./registry/registry', { title: 'Прием проб', data: results, csrfToken: req.csrfToken() });
     });
 }).post('/registry', function(req, res, next) {
         connection.query(
-            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, staff_id) ' +
-            'VALUES (?,?,?,?,?,?)',
+            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, staff_id) VALUES (?,?,?,?,?,?)',
             [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId],
             function (error, results, fields) {
                 if (error) throw error;
@@ -137,6 +136,7 @@ router.get('/registry/add', function(req, res, next) {
     });
     
 });
+
 router.get('/registry/:id', function(req, res, next) {
     connection.query('SELECT * FROM registry_reports WHERE id=?; ' +
         'SELECT * FROM types_of_check; ' +
@@ -148,6 +148,52 @@ router.get('/registry/:id', function(req, res, next) {
     });
     
 });
+router.post('/registry/search', function(req, res, next) {
+    var where = '';
+    if ( req.body.findBy === 'customer' )
+        where = 'WHERE customers.name LIKE ?;';
+    else if ( req.body.findBy === 'name' )
+        where = 'WHERE rr.name LIKE ?;';
+    else
+        where = 'WHERE rr.registry_id LIKE ?;'
+    connection.query(
+        'SELECT rr.id, rr.registry_id, rr.name, tests.name AS test_name, types_of_check.name AS type_name, customers.name AS customer_name ' +
+        'FROM registry_reports AS rr ' +
+        'LEFT JOIN tests ON rr.test_id = tests.id ' +
+        'LEFT JOIN types_of_check ON rr.type_id = types_of_check.id ' +
+        'LEFT JOIN customers ON rr.customer_id = customers.id ' +
+        where ,[ '%' + req.body.word + '%'],function (error, results, fields) {
+            if (error) throw error;
+            res.render( './registry/registry', { title: 'Результаты поиска: '+ req.body.word, data: results, csrfToken: req.csrfToken() } );
+        });
+    
+});
+router.post('/registry/order', function(req, res, next) {
+    var orderBy = '';
+    if ( req.body.orderBy === 'customer_name' )
+        orderBy = 'ORDER BY customers.name ';
+    else if ( req.body.orderBy === 'name' )
+        orderBy = 'ORDER BY rr.name ';
+    else if ( req.body.orderBy === 'test_name' )
+        orderBy = 'ORDER BY test_name ';
+    else if ( req.body.orderBy === 'type_name' )
+        orderBy = 'ORDER BY type_name ';
+    else
+        orderBy = 'ORDER BY rr.registry_id ';
+    connection.query(
+        'SELECT rr.id, rr.registry_id, rr.name, tests.name AS test_name, types_of_check.name AS type_name, customers.name AS customer_name ' +
+        'FROM registry_reports AS rr ' +
+        'LEFT JOIN tests ON rr.test_id = tests.id ' +
+        'LEFT JOIN types_of_check ON rr.type_id = types_of_check.id ' +
+        'LEFT JOIN customers ON rr.customer_id = customers.id ' +
+        orderBy +
+        (req.body.order === 'desc' ? 'DESC;' : 'ASC;')  ,function (error, results, fields) {
+            if (error) throw error;
+            res.render( './registry/registry', { title: 'Результат', data: results, csrfToken: req.csrfToken() } );
+        });
+    
+});
+
 
 // Type of check
 router.get('/type-of-check', function(req, res, next) {
@@ -330,7 +376,23 @@ router.get('/staff', function(req, res, next) {
     
     res.redirect('back');
 });
-
+// Staff Search
+router.post('/staff/search', function(req, res, next) {
+    connection.query(
+        "SELECT staff.id, staff.name, staff.surname, staff.fathers_name, positions.name AS position_name " +
+        "FROM staff " +
+        "LEFT JOIN position_held " +
+        "ON staff.id = position_held.staff_id " +
+        "LEFT JOIN positions " +
+        "ON positions.id = position_held.position_id " +
+        "WHERE staff.surname LIKE ?;", [ '%' + req.body.surname + '%'],
+        function (error, results, fields) {
+            console.log(error);
+            if (error) throw error;
+            res.render( './staff/staff', { title: 'Результаты поиска: ' + req.body.surname, data: results, csrfToken: req.csrfToken() } );
+        });
+    
+});
 
 // Staff positions
 router.get('/staff/positions', function(req, res, next) {
@@ -356,8 +418,8 @@ router.get('/staff/positions', function(req, res, next) {
     
 }).put('/staff/positions', function(req, res, next) {
     connection.query(
-        'UPDATE positions SET name=? WHERE id=?;',
-        [req.body.name.trim(), req.body.id],
+        'UPDATE positions SET name=?, lab_id=? WHERE id=?;',
+        [req.body.name.trim(), req.body.labId, req.body.id],
         function (error, results, fields) { if (error) throw error; }
     );
     
@@ -373,10 +435,11 @@ router.get('/staff/positions', function(req, res, next) {
     res.redirect('back');
 });
 router.get('/staff/positions/:id', function(req, res, next) {
-    connection.query('SELECT * FROM positions WHERE id=?;', [ req.params.id ],function (error, results, fields) {
+    connection.query(
+        'SELECT * FROM positions WHERE id=?; ' +
+        'SELECT * FROM laboratories;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        console.log(results[0]);
-        res.render( './staff/position-edit', { title: 'Должность', data: results[0], csrfToken: req.csrfToken() } );
+        res.render( './staff/position-edit', { title: 'Должность', data: results, csrfToken: req.csrfToken() } );
     });
     
 });

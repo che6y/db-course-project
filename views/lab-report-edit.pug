@@ -5,7 +5,7 @@ block content
         h3= title
         form(
             method="POST",
-            action="/lab-reports")
+            action="/lab-reports?_method=PUT")
             input(
                 type="hidden",
                 name="_csrf",
@@ -52,23 +52,25 @@ block content
                 div(class="form-group col-sm-4")
                     label(for="analysis-date") Дата проведения анализа
                     input(
-                        id="analysis-date",
-                        type="text",
-                        class="form-control",
-                        name="analysisDate",
-                        value=data[0][0].analysis_date.toISOString().substring(0,10),
+                        id="analysis-date"
+                        type="text"
+                        class="form-control"
+                        name="analysisDate"
+                        autocomplete="off"
+                        value=data[0][0].analysis_date.toISOString().substring(0,10)
                         required)
                 div(class="form-group col-sm-4")
                     label(for="deviation") Наличие отклонения от нормы
                     input(
-                        id="deviation",
-                        class="form-control",
-                        name="deviation",
-                        type="checkbox",
+                        id="deviation"
+                        class="form-control"
+                        name="deviation"
+                        type="checkbox"
+                        checked=(data[0][0].deviation === 1)
                         value=data[0][0].deviation)
                 div(class="form-group col-sm-12")
                     button(
-                        class="btn btn-primary",
+                        class="btn btn-primary"
                         type="submit"
-                    ) Добавить
-                    a(href="javascript:history.back()", class="btn btn-secondary") Отменить
+                    ) Сохранить
+                    a(href="javascript:history.back()" class="btn btn-secondary") Отменить

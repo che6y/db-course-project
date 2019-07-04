@@ -44,28 +44,29 @@ block content
                             option(
                                 value=item.id,
                                 class="form-control"
-                            )=item.name
+                                )= item.name
 
                 div(class="form-group col-sm-4")
                     label(for="analysis-date") Дата проведения анализа
                     input(
-                        id="analysis-date",
-                        type="text",
-                        class="form-control",
-                        name="analysisDate",
-                        value="",
+                        id="analysis-date"
+                        type="text"
+                        class="form-control"
+                        name="analysisDate"
+                        autocomplete="off"
+                        value=""
                         required)
                 div(class="form-group col-sm-4")
                     label(for="deviation") Наличие отклонения от нормы
                     input(
-                        id="deviation",
-                        class="form-control",
-                        name="deviation",
-                        type="checkbox",
+                        id="deviation"
+                        class="form-control"
+                        name="deviation"
+                        type="checkbox"
                         value="0")
                 div(class="form-group col-sm-12")
                     button(
-                        class="btn btn-primary",
+                        class="btn btn-primary"
                         type="submit"
                     ) Добавить
-                    a(href="javascript:history.back()", class="btn btn-secondary") Отменить
+                    a(href="javascript:history.back()" class="btn btn-secondary") Отменить
