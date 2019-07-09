@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS laboratory_reports (
      id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-     registry_id VARCHAR(11) NOT NULL,
+     registry_id VARCHAR(11) UNIQUE NOT NULL,
      staff_id INT(11) UNSIGNED NOT NULL,
      lab_id INT(11) UNSIGNED NOT NULL,
      deviation TINYINT,

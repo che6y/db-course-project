@@ -15,7 +15,7 @@ block content
                     th(scope="col") Дата проведения анализа
                     th(scope="col") Действия
             tbody
-                each item in data[0]
+                each item in data
                     tr
                         td= item.registry_id
                         td= item.surname + ' ' + item.name.substring(0,1) + '.' + item.fathers_name.substring(0,1) + '.'

@@ -22,10 +22,7 @@ router.get('/lab-reports', function(req, res, next) {
         'LEFT JOIN staff ' +
         'ON lr.staff_id = staff.id ' +
         'ORDER BY lr.id DESC ' +
-        'LIMIT 50;' +
-        'SELECT * FROM laboratories; ' +
-        'SELECT registry_id FROM registry_reports; ' +
-        'SELECT * FROM staff;', function (error, results, fields) {
+        'LIMIT 50;', function (error, results, fields) {
         if (error) throw error;
         res.render( 'lab-reports', { title: 'Результаты анализов', data: results, csrfToken: req.csrfToken() } );
     });
@@ -52,7 +49,7 @@ router.get('/lab-reports', function(req, res, next) {
     }
 ).delete('/lab-reports', function(req, res, next) {
         connection.query(
-            'DELETE FROM laboratory_reports WHERE id=?',
+            'DELETE FROM laboratory_reports WHERE id=?;',
             [req.body.id],
             function (error, results, fields) { if (error) throw error;}
         );

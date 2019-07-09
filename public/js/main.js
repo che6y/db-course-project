@@ -25,7 +25,6 @@ jQuery(function($) {
     
     $('#deviation').on('change', function(e){
         var checkbox =  $(e.target);
-        console.log(checkbox.prop('checked'));
         if ( checkbox.prop('checked') )
             checkbox.val(1);
         else
