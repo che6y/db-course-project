@@ -6,6 +6,9 @@ block content
     div(class="container")
         h3= title
 
+        if message
+            div.alert(class='alert-danger')= message
+
         form(
             method="POST",
             action="/registry")

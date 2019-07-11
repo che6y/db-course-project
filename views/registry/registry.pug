@@ -12,7 +12,7 @@ block content
                 class="btn btn-info"
                 data-toggle="modal"
                 data-target="#sortingForm"
-                ) Упорядочить
+                ) Сортировать
             button(
                 type="button"
                 class="btn btn-info"
@@ -80,7 +80,7 @@ block content
                                     name="_csrf"
                                     value=csrfToken)
                                 div(class="form-group")
-                                    label(for="find-by") Найти запись по
+                                    label(for="find-by") Поле
                                     select(
                                         id="find-by",
                                         class="form-control",
@@ -117,7 +117,7 @@ block content
                 div(class="modal-dialog" role="document")
                     div(class="modal-content")
                         div(class="modal-header")
-                            h5(class="modal-title" id="sortingFormLabel") Упорядочить
+                            h5(class="modal-title" id="sortingFormLabel") Сортировать
                             button(
                                 type="button"
                                 class="close"
@@ -131,7 +131,7 @@ block content
                                     name="_csrf"
                                     value=csrfToken)
                                 div(class="form-group")
-                                    label(for="order-by") Выберите колонку
+                                    label(for="order-by") Поле
                                     select(
                                         id="order-by",
                                         class="form-control",

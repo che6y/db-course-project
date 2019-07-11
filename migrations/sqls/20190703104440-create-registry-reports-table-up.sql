@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS registry_reports (
       id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-      name VARCHAR(100),
+      name VARCHAR(100) NOT NULL,
       registry_id VARCHAR(11) NOT NULL,
       customer_id int(11) UNSIGNED NOT NULL,
       staff_id INT(11) UNSIGNED NOT NULL,

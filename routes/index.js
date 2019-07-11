@@ -4,12 +4,11 @@ const connection     = require('../database.js');
 const cookieParser   = require('cookie-parser');
 const csrf           = require('csurf');
 const methodOverride = require('method-override');
-const { check, validationResult } = require('express-validator/check');
 
-router.use(cookieParser());
 router.use(express.urlencoded({ extended: false }));
 router.use(methodOverride('_method'));
 router.use(csrf({ cookie: true }));
+
 
 router.get('/', function(req, res, next) {
     res.render('index', { title: 'Лаборатория' });
@@ -59,7 +58,11 @@ router.get('/lab-reports', function(req, res, next) {
 );
 router.get('/lab-reports/add', function(req, res, next) {
     connection.query(
-        'SELECT registry_id, id FROM registry_reports; ' +
+        'SELECT rr.id, rr.registry_id, lr.id ' +
+        'FROM registry_reports as rr ' +
+        'LEFT JOIN laboratory_reports as lr ' +
+        'ON rr.registry_id = lr.registry_id ' +
+        'WHERE lr.id IS NULL;' +
         'SELECT * FROM staff; ' +
         'SELECT * FROM laboratories;',function (error, results, fields) {
             if (error) throw error;
@@ -69,9 +72,14 @@ router.get('/lab-reports/add', function(req, res, next) {
 });
 router.get('/lab-reports/:id', function(req, res, next) {
     connection.query('SELECT * FROM laboratory_reports WHERE id=?; ' +
-        'SELECT registry_id, id FROM registry_reports; ' +
+        'SELECT rr.id, rr.registry_id, lr.id ' +
+        'FROM registry_reports as rr ' +
+        'LEFT JOIN laboratory_reports as lr ' +
+        'ON rr.registry_id = lr.registry_id ' +
+        'WHERE lr.id=? OR lr.id IS NULL; ' +
         'SELECT * FROM staff; ' +
-        'SELECT * FROM laboratories;', [ req.params.id ],function (error, results, fields) {
+        'SELECT * FROM laboratories;', [ parseInt(req.params.id), parseInt(req.params.id) ],function (error, results, fields) {
+        console.log(error);
         if (error) throw error;
         res.render( 'lab-report-edit', { title: 'Изменить запись', data: results, csrfToken: req.csrfToken() } );
     });
@@ -87,16 +95,24 @@ router.get('/registry', function(req, res, next) {
         'LEFT JOIN tests ON rr.test_id = tests.id ' +
         'LEFT JOIN types_of_check ON rr.type_id = types_of_check.id ' +
         'LEFT JOIN customers ON rr.customer_id = customers.id ' +
-        'ORDER BY rr.id DESC', function (error, results, fields) {
+        'ORDER BY rr.id DESC ' +
+        'LIMIT 50;', function (error, results, fields) {
         if (error) throw error;
         res.render('./registry/registry', { title: 'Прием проб', data: results, csrfToken: req.csrfToken() });
     });
 }).post('/registry', function(req, res, next) {
         connection.query(
-            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, staff_id) VALUES (?,?,?,?,?,?)',
+            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, staff_id) VALUES (?,?,?,?,?,?);',
             [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId],
             function (error, results, fields) {
-                if (error) throw error;
+                if ( error && error.code !== 'ER_DUP_ENTRY' ) {
+                    throw error;
+                }
+                if ( error && error.code === 'ER_DUP_ENTRY' ) {
+                    res.redirect('/registry/add?registryId=' + req.body.registryId);
+                    return;
+                }
+    
                 res.redirect('/registry');
             }
         );
@@ -107,14 +123,23 @@ router.get('/registry', function(req, res, next) {
             'SET name=?, registry_id=?, customer_id=?, test_id=?, type_id=?, staff_id=? ' +
             'WHERE id=?;',
             [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId, req.body.id],
-            function (error, results, fields) { if (error) throw error; }
+            function (error, results, fields) {
+                if ( error && error.code !== 'ER_DUP_ENTRY' ) {
+                    res.sendStatus(500);
+                    return;
+                }
+                if ( error && error.code === 'ER_DUP_ENTRY' ) {
+                    res.redirect('/registry/' + req.body.id + '?registryId=' + req.body.registryId);
+                    return;
+                }
+                res.redirect('/registry');
+            }
         );
         
-        res.redirect('/registry');
     }
 ).delete('/registry', function(req, res, next) {
         connection.query(
-            'DELETE FROM registry_reports WHERE id=?',
+            'DELETE FROM registry_reports WHERE id=?;',
             [req.body.id],
             function (error, results, fields) { if (error) throw error;}
         );
@@ -123,25 +148,33 @@ router.get('/registry', function(req, res, next) {
     }
 );
 router.get('/registry/add', function(req, res, next) {
+    var message = '';
+    if (req.query.registryId != undefined) {
+        message = 'Данный номер Документа ' + req.query.registryId + ' уже занят.'
+    }
     connection.query(
         'SELECT * FROM types_of_check; ' +
         'SELECT id, name FROM tests; ' +
         'SELECT id, name FROM customers; ' +
         'SELECT * FROM staff;',function (error, results, fields) {
         if (error) throw error;
-        res.render( './registry/registry-add', { title: 'Добавить запись', data: results, csrfToken: req.csrfToken() } );
+        res.render( './registry/registry-add', { title: 'Добавить запись', message: message, data: results, csrfToken: req.csrfToken() } );
     });
     
 });
 
 router.get('/registry/:id', function(req, res, next) {
+    var message = '';
+    if (req.query.registryId != undefined) {
+        message = 'Данный номер Документа ' + req.query.registryId + ' уже занят.'
+    }
     connection.query('SELECT * FROM registry_reports WHERE id=?; ' +
         'SELECT * FROM types_of_check; ' +
         'SELECT id, name FROM tests; ' +
         'SELECT id, name FROM customers; ' +
         'SELECT * FROM staff;', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
-        res.render( './registry/registry-edit', { title: results[0][0].name + ' - Изменить', data: results, csrfToken: req.csrfToken() } );
+        res.render( './registry/registry-edit', { title: results[0][0].registry_id + ' - Изменить',message: message, data: results, csrfToken: req.csrfToken() } );
     });
     
 });
@@ -184,7 +217,7 @@ router.post('/registry/order', function(req, res, next) {
         'LEFT JOIN types_of_check ON rr.type_id = types_of_check.id ' +
         'LEFT JOIN customers ON rr.customer_id = customers.id ' +
         orderBy +
-        (req.body.order === 'desc' ? 'DESC;' : 'ASC;')  ,function (error, results, fields) {
+        (req.body.order === 'desc' ? ' DESC;' : ' ASC;')  ,function (error, results, fields) {
             if (error) throw error;
             res.render( './registry/registry', { title: 'Результат', data: results, csrfToken: req.csrfToken() } );
         });
