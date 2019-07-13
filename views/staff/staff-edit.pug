@@ -25,6 +25,7 @@ block content
                     type="text",
                     class="form-control",
                     name="surname",
+                    maxlength="30",
                     value=data[0][0].surname)
             div(class="form-group col-sm-6")
                 label(for="new-item-name") Имя
@@ -33,6 +34,7 @@ block content
                     type="text",
                     class="form-control",
                     name="name",
+                    maxlength="30",
                     value=data[0][0].name)
             div(class="form-group col-sm-6")
                 label(for="new-item-fathers-name") Отчество
@@ -41,6 +43,7 @@ block content
                     type="text",
                     class="form-control",
                     name="fathersName",
+                    maxlength="30",
                     value=data[0][0].fathers_name)
             div(class="form-group col-sm-6")
                 label(for="new-item-position") Должность
@@ -79,6 +82,7 @@ block content
                     step="1",
                     class="form-control",
                     name="rate",
+                    maxlength="11",
                     value=data[0][0].rate)
             div(class="form-group col-sm-12")
                 button(

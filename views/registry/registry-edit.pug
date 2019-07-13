@@ -28,6 +28,7 @@ block content
                         type="text",
                         class="form-control",
                         name="registryId",
+                        maxlength="11",
                         value= data[0][0].registry_id,
                         required)
                 div(class="form-group col-sm-6")
@@ -38,6 +39,7 @@ block content
                         class="form-control",
                         name="name",
                         value= data[0][0].name,
+                        maxlength="100",
                         required)
                 div(class="form-group col-sm-6")
                     label(for="type-of-check") Вид проверки

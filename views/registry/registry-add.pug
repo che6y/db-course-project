@@ -21,59 +21,61 @@ block content
                 div(class="form-group col-sm-6")
                     label(for="registry-number") Номер документа приема проб
                     input(
-                        id="registry-number",
-                        type="text",
-                        class="form-control",
-                        name="registryId",
-                        value="",
+                        id="registry-number"
+                        type="text"
+                        class="form-control"
+                        name="registryId"
+                        value=""
+                        maxlength="11"
                         required)
                 div(class="form-group col-sm-6")
                     label(for="name") Наименование Исследуемого материала
                     input(
-                        id="name",
-                        type="text",
-                        class="form-control",
-                        name="name",
-                        value="",
+                        id="name"
+                        type="text"
+                        class="form-control"
+                        name="name"
+                        value=""
+                        maxlength="100"
                         required)
                 div(class="form-group col-sm-6")
                     label(for="type-of-check") Вид проверки
                     select(
-                        id="type-of-check",
-                        class="form-control",
+                        id="type-of-check"
+                        class="form-control"
                         name="typeId")
                         each item in data[0]
                             option(
-                                value=item.id,
+                                value=item.id
                                 class="form-control"
                             )=item.name
                 div(class="form-group col-sm-6")
                     label(for="test") Исследование
                     select(
-                        id="test",
-                        class="form-control",
+                        id="test"
+                        class="form-control"
                         name="testId")
                         each item in data[1]
                             option(
-                                value=item.id,
+                                value=item.id
                                 class="form-control"
                             )=item.name
                 div(class="form-group col-sm-6")
                     label(for="customer") Заказчик
                     select(
-                        id="customer",
-                        class="form-control",
+                        id="customer"
+                        class="form-control"
                         name="customerId")
                         each item in data[2]
                             option(
-                                value=item.id,
+                                value=item.id
                                 class="form-control"
                             )=item.name
                 div(class="form-group col-sm-6")
                     label(for="staff") Принял
                     select(
                         id="staff",
-                        class="form-control",
+                        class="form-control"
                         name="staffId")
                         each item in data[3]
                             option(
@@ -82,7 +84,7 @@ block content
                             )= item.surname + " " + item.name.substring(0,1) + "." + item.fathers_name.substring(0,1)
                 div(class="form-group col-sm-12")
                     button(
-                        class="btn btn-primary",
+                        class="btn btn-primary"
                         type="submit"
-                    ) Добавить
+                        ) Добавить
                     a(href="javascript:history.back()", class="btn btn-secondary") Отменить

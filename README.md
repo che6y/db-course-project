@@ -1,2 +1,3 @@
 # db-course-project
-Application for Laboratory using ReactJS
+Application for Laboratory using NodeJS
+
