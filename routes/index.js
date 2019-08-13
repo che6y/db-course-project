@@ -27,7 +27,7 @@ router.get('/lab-reports', function(req, res, next) {
     });
 }).post('/lab-reports', function(req, res, next) {
         connection.query(
-            'INSERT INTO laboratory_reports (registry_id, staff_id, deviation, lab_id, analysis_date) VALUES (?,?,?,?,?);',
+            'INSERT INTO laboratory_reports (registry_id, ph_id, deviation, lab_id, analysis_date) VALUES (?,?,?,?,?);',
             [req.body.registryId, req.body.staffId, req.body.deviation, req.body.labId, req.body.analysisDate],
             function (error, results, fields) {
                 if (error) throw error;
@@ -38,7 +38,7 @@ router.get('/lab-reports', function(req, res, next) {
 ).put('/lab-reports', function(req, res, next) {
         connection.query(
             'UPDATE laboratory_reports ' +
-            'SET registry_id=?, staff_id=?, deviation=?, lab_id=? ' +
+            'SET registry_id=?, ph_id=?, deviation=?, lab_id=? ' +
             'WHERE id=?;',
             [req.body.registryId, req.body.staffId, req.body.deviation, req.body.labId, req.body.id],
             function (error, results, fields) { if (error) throw error; }
@@ -63,7 +63,10 @@ router.get('/lab-reports/add', function(req, res, next) {
         'LEFT JOIN laboratory_reports as lr ' +
         'ON rr.registry_id = lr.registry_id ' +
         'WHERE lr.id IS NULL;' +
-        'SELECT * FROM staff; ' +
+        'SELECT staff.name as name, staff.surname AS surname, staff.fathers_name AS fathers_name, position_held.id AS id ' +
+        'FROM staff ' +
+        'LEFT JOIN position_held ' +
+        'ON staff.id = position_held.staff_id; '+
         'SELECT * FROM laboratories;',function (error, results, fields) {
             if (error) throw error;
             res.render( 'lab-report-add', { title: 'Добавить запись', data: results, csrfToken: req.csrfToken() } );
@@ -77,7 +80,10 @@ router.get('/lab-reports/:id', function(req, res, next) {
         'LEFT JOIN laboratory_reports as lr ' +
         'ON rr.registry_id = lr.registry_id ' +
         'WHERE lr.id=? OR lr.id IS NULL; ' +
-        'SELECT * FROM staff; ' +
+        'SELECT staff.name as name, staff.surname AS surname, staff.fathers_name AS fathers_name, position_held.id AS id ' +
+        'FROM staff ' +
+        'LEFT JOIN position_held ' +
+        'ON staff.id = position_held.staff_id; '+
         'SELECT * FROM laboratories;', [ parseInt(req.params.id), parseInt(req.params.id) ],function (error, results, fields) {
         console.log(error);
         if (error) throw error;
@@ -101,9 +107,11 @@ router.get('/registry', function(req, res, next) {
         res.render('./registry/registry', { title: 'Прием проб', data: results, csrfToken: req.csrfToken() });
     });
 }).post('/registry', function(req, res, next) {
+        var today = new Date();
+        var created_at = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDay();
         connection.query(
-            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, staff_id) VALUES (?,?,?,?,?,?);',
-            [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId],
+            'INSERT INTO registry_reports (name, registry_id, customer_id, test_id, type_id, ph_id, created_at) VALUES (?,?,?,?,?,?,?);',
+            [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId, created_at],
             function (error, results, fields) {
                 if ( error && error.code !== 'ER_DUP_ENTRY' ) {
                     throw error;
@@ -120,7 +128,7 @@ router.get('/registry', function(req, res, next) {
 ).put('/registry', function(req, res, next) {
         connection.query(
             'UPDATE registry_reports ' +
-            'SET name=?, registry_id=?, customer_id=?, test_id=?, type_id=?, staff_id=? ' +
+            'SET name=?, registry_id=?, customer_id=?, test_id=?, type_id=?, ph_id=? ' +
             'WHERE id=?;',
             [req.body.name, req.body.registryId, req.body.customerId, req.body.testId, req.body.typeId, req.body.staffId, req.body.id],
             function (error, results, fields) {
@@ -156,7 +164,10 @@ router.get('/registry/add', function(req, res, next) {
         'SELECT * FROM types_of_check; ' +
         'SELECT id, name FROM tests; ' +
         'SELECT id, name FROM customers; ' +
-        'SELECT * FROM staff;',function (error, results, fields) {
+        'SELECT staff.name as name, staff.surname AS surname, staff.fathers_name AS fathers_name, position_held.id AS id ' +
+        'FROM staff ' +
+        'LEFT JOIN position_held ' +
+        'ON staff.id = position_held.staff_id; ',function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/registry-add', { title: 'Добавить запись', message: message, data: results, csrfToken: req.csrfToken() } );
     });
@@ -172,7 +183,10 @@ router.get('/registry/:id', function(req, res, next) {
         'SELECT * FROM types_of_check; ' +
         'SELECT id, name FROM tests; ' +
         'SELECT id, name FROM customers; ' +
-        'SELECT * FROM staff;', [ req.params.id ],function (error, results, fields) {
+        'SELECT staff.name as name, staff.surname AS surname, staff.fathers_name AS fathers_name, position_held.id AS id ' +
+        'FROM staff ' +
+        'LEFT JOIN position_held ' +
+        'ON staff.id = position_held.staff_id; ', [ req.params.id ],function (error, results, fields) {
         if (error) throw error;
         res.render( './registry/registry-edit', { title: results[0][0].registry_id + ' - Изменить',message: message, data: results, csrfToken: req.csrfToken() } );
     });
