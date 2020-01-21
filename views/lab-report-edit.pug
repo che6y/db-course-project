@@ -23,6 +23,7 @@ block content
                         name="registryId")
                         each item in data[1]
                             option(
+                                selected=(data[0][0]['registry_id'] === item.registry_id),
                                 value=item.registry_id,
                                 class="form-control"
                             )=item.registry_id
@@ -31,9 +32,10 @@ block content
                     select(
                         id="staff-id",
                         class="form-control",
-                        name="staffId")
+                        name="phId")
                         each item in data[2]
                             option(
+                                selected=(data[0][0]['ph_id'] === item.id),
                                 value=item.id,
                                 class="form-control"
                             )=item.surname + ' ' + item.name.substring(0,1) + '.' + item.fathers_name.substring(0,1) + '.'
@@ -45,6 +47,7 @@ block content
                         name="labId")
                         each item in data[3]
                             option(
+                                selected=(data[0][0]['lab_id'] === item.id),
                                 value=item.id,
                                 class="form-control"
                             )=item.name

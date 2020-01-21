@@ -18,8 +18,10 @@ router.get('/', function(req, res, next) {
 router.get('/lab-reports', function(req, res, next) {
     connection.query('SELECT lr.id, lr.registry_id, lr.deviation, lr.analysis_date, staff.name, staff.surname, staff.fathers_name ' +
         'FROM laboratory_reports AS lr ' +
+        'LEFT JOIN position_held ' +
+        'ON lr.ph_id = position_held.id ' +
         'LEFT JOIN staff ' +
-        'ON lr.staff_id = staff.id ' +
+        'ON position_held.staff_id = staff.id ' +
         'ORDER BY lr.id DESC ' +
         'LIMIT 50;', function (error, results, fields) {
         if (error) throw error;
@@ -28,7 +30,7 @@ router.get('/lab-reports', function(req, res, next) {
 }).post('/lab-reports', function(req, res, next) {
         connection.query(
             'INSERT INTO laboratory_reports (registry_id, ph_id, deviation, lab_id, analysis_date) VALUES (?,?,?,?,?);',
-            [req.body.registryId, req.body.staffId, req.body.deviation, req.body.labId, req.body.analysisDate],
+            [req.body.registryId, req.body.phId, req.body.deviation, req.body.labId, req.body.analysisDate],
             function (error, results, fields) {
                 if (error) throw error;
                 res.redirect('/lab-reports');
@@ -38,9 +40,9 @@ router.get('/lab-reports', function(req, res, next) {
 ).put('/lab-reports', function(req, res, next) {
         connection.query(
             'UPDATE laboratory_reports ' +
-            'SET registry_id=?, ph_id=?, deviation=?, lab_id=? ' +
+            'SET registry_id=?, ph_id=?, deviation=?, lab_id=?, analysis_date=? ' +
             'WHERE id=?;',
-            [req.body.registryId, req.body.staffId, req.body.deviation, req.body.labId, req.body.id],
+            [req.body.registryId, req.body.phId, req.body.deviation, req.body.labId, req.body.analysisDate, req.body.id],
             function (error, results, fields) { if (error) throw error; }
         );
         
@@ -58,7 +60,7 @@ router.get('/lab-reports', function(req, res, next) {
 );
 router.get('/lab-reports/add', function(req, res, next) {
     connection.query(
-        'SELECT rr.id, rr.registry_id, lr.id ' +
+        'SELECT rr.id, rr.registry_id, lr.id, lr.analysis_date ' +
         'FROM registry_reports as rr ' +
         'LEFT JOIN laboratory_reports as lr ' +
         'ON rr.registry_id = lr.registry_id ' +
@@ -75,11 +77,11 @@ router.get('/lab-reports/add', function(req, res, next) {
 });
 router.get('/lab-reports/:id', function(req, res, next) {
     connection.query('SELECT * FROM laboratory_reports WHERE id=?; ' +
-        'SELECT rr.id, rr.registry_id, lr.id ' +
+        'SELECT rr.id, rr.registry_id, laboratory_reports.id, laboratory_reports.analysis_date ' +
         'FROM registry_reports as rr ' +
-        'LEFT JOIN laboratory_reports as lr ' +
-        'ON rr.registry_id = lr.registry_id ' +
-        'WHERE lr.id=? OR lr.id IS NULL; ' +
+        'LEFT JOIN laboratory_reports ' +
+        'ON rr.registry_id = laboratory_reports.registry_id ' +
+        'WHERE laboratory_reports.id=? OR laboratory_reports.id IS NULL; ' +
         'SELECT staff.name as name, staff.surname AS surname, staff.fathers_name AS fathers_name, position_held.id AS id ' +
         'FROM staff ' +
         'LEFT JOIN position_held ' +
